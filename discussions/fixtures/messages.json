@@ -48,6 +48,16 @@
     }
   },
   {
+    "pk": 3,
+    "model": "discussions.discussionrecipient",
+    "fields": {
+      "discussion": 1,
+      "read_at": null,
+      "deleted_at": null,
+      "user": 1
+    }
+  },
+  {
     "pk": 2,
     "model": "discussions.discussionrecipient",
     "fields": {
@@ -55,6 +65,16 @@
       "read_at": "2010-01-01 12:00:00",
       "deleted_at": null,
       "user": 1
+    }
+  },
+  {
+    "pk": 4,
+    "model": "discussions.discussionrecipient",
+    "fields": {
+      "discussion": 2,
+      "read_at": "2010-01-01 12:00:00",
+      "deleted_at": null,
+      "user": 2
     }
   },
   {

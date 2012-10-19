@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, FormView, ListView
+from django.views.generic.edit import FormMixin
 from django.views.decorators.http import require_http_methods
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
@@ -10,9 +11,10 @@ from django.contrib import messages
 from django.utils.translation import ungettext
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.db import models
+from django.http import Http404
 
 from discussions.models import DiscussionRecipient, Discussion
-from discussions.forms import ComposeForm
+from discussions.forms import ComposeForm, ReplyForm
 
 
 class DiscussionListView(ListView):
@@ -40,27 +42,66 @@ class DiscussionListView(ListView):
 discussion_list = login_required(DiscussionListView.as_view())
 
 
-class DiscussionDetailView(DetailView):
+class DiscussionDetailView(DetailView, FormMixin):
     pk_url_kwarg = 'discussion_id'
     model = Discussion
     context_object_name = 'discussion'
     template_name = 'discussions/detail.html'
+    form_class = ReplyForm
+
+    def get_success_url(self):
+        return reverse('discussions_detail', kwargs={
+            'discussion_id': self.object.pk
+        })
+
+    def is_allowed(self, user):
+        return self.object.can_view(user)
 
     def get_context_data(self, **kwargs):
         data = super(DiscussionDetailView, self).get_context_data(**kwargs)
 
+        if not self.is_allowed(self.request.user):
+            raise Http404
+
         recipients = DiscussionRecipient.objects.filter(discussion=self.object,
                                                         user=self.request.user,
                                                         read_at__isnull=True)
+
         now = datetime.now()
         recipients.update(read_at=now)
 
         return dict(data, **{
-            'recipients': recipients
+            'recipients': recipients,
+            'form': self.get_form(self.get_form_class()),
+            'message_list': self.get_messages(self.object)
         })
+
+    def get_messages(self, discussion):
+        return discussion.messages.all()
 
     def get_template_names(self):
         return [self.template_name]
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+        if form.is_valid():
+            return self.form_valid(form)
+
+        return self.form_invalid(form)
+
+    def form_valid(self, form):
+        self.object = self.get_object()
+
+        form.save(self.request.user)
+
+        return super(DiscussionDetailView, self).form_valid(form)
+
+    def get_form_kwargs(self):
+        return dict(super(DiscussionDetailView, self).get_form_kwargs(), **{
+            'discussion': self.get_object()
+        })
 
 
 discussion_detail = login_required(DiscussionDetailView.as_view())

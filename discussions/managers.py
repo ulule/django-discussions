@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Q
+from django.db.models import signals
 
 
 class DiscussionContactManager(models.Manager):
@@ -76,7 +77,7 @@ class DiscussionManager(models.Manager):
         discussion.add_message(body)
 
         # Save the recipients
-        discussion.save_recipients(to_user_list)
+        discussion.save_recipients(to_user_list + [sender, ])
         discussion.update_contacts(to_user_list)
 
         return discussion
@@ -130,3 +131,16 @@ class DiscussionRecipientManager(models.Manager):
                                    deleted_at__isnull=True).count()
 
         return unread_total
+
+
+class MessageManager(models.Manager):
+    def contribute_to_class(self, cls, name):
+        signals.post_save.connect(self.post_save, sender=cls)
+        return super(MessageManager, self).contribute_to_class(cls, name)
+
+    def post_save(self, instance, **kwargs):
+        if kwargs.get('created', False):
+            discussion = instance.discussion
+
+            discussion.latest_message = instance
+            discussion.save()

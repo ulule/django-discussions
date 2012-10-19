@@ -16,15 +16,12 @@ class ComposeForm(forms.Form):
 
     def save(self, sender):
         """
-        Save the message and send it out into the wide world.
+        Save the discussion and send it out into the wide world.
 
         :param sender:
             The :class:`User` that sends the message.
 
-        :param parent_msg:
-            The :class:`Message` that preceded this message in the thread.
-
-        :return: The saved :class:`Message`.
+        :return: The saved :class:`Discussion`.
 
         """
         to_user_list = self.cleaned_data['to']
@@ -37,3 +34,17 @@ class ComposeForm(forms.Form):
                                                           body)
 
         return self.discussion
+
+
+class ReplyForm(forms.Form):
+    body = forms.CharField(label=_('Message'),
+                           widget=forms.Textarea({'class': 'message'}),
+                           required=True)
+
+    def __init__(self, *args, **kwargs):
+        self.discussion = kwargs.pop('discussion')
+
+        super(ReplyForm, self).__init__(*args, **kwargs)
+
+    def save(self, sender):
+        return self.discussion.add_message(self.cleaned_data['body'], sender)

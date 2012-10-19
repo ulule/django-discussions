@@ -9,16 +9,24 @@
     {% blocktrans %}{{ unread_message_count }} new messages.{% endblocktrans %}
     <a href="{% url "discussions_compose" %}">{% trans "Compose" %}</a>
     <ul>
-        {% for message in message_list %}
+        {% for discussion in discussion_list %}
             <li>
-            {% if message.from_user == user %}
-                <a href="{% url "discussions_user_detail" message.to_user.username %}">{{ message.to_user }}</a>
-                {% get_unread_message_count_between user and message.to_user as unread_between_count %}
-            {% else %}
-                <a href="{% url "discussions_user_detail" message.from_user.username %}">{{ message.from_user }}</a>
-                {% get_unread_message_count_between user and message.from_user as unread_between_count %}
-            {% endif %}
-            {% blocktrans with message.latest_message as latest_message %}{{ latest_message }} ({{ unread_between_count }} new){% endblocktrans %}
+                <div class="recipient-list">
+                    {% for recipient in discussion.recipients.all %}
+                        <ul>
+                            {% if recipient != user %}
+                                <li><a href="{% url discussion_list user.username %}">{{ recipient }}</a></li>
+                            {% endif %}
+                        </ul>
+                    {% endfor %}
+                </div>
+
+                <h2>{{ discussion.title }}</h2>
+
+                {% if discussion.last_message %}
+                    <p>{{ discussion.last_message.body }}</p>
+                    <em>{% blocktrans with author=discussion.last_message.user %}By {{ author }}{% endblocktrans %}</em>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>

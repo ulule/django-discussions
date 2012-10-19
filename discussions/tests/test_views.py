@@ -95,6 +95,24 @@ class MessagesViewsTests(TestCase):
                                              user=ampelmann)
         self.failUnless(mr.read_at)
 
+    def test_discussion_detail_new_message(self):
+        self.client.login(username='ampelmann', password='$ecret')
+        discussion = Discussion.objects.get(pk=1)
+
+        response = self.client.post(discussion.get_absolute_url(),
+                                    data={
+                                        'body': 'My reply'
+                                    })
+        self.assertRedirects(response, discussion.get_absolute_url())
+
+        self.assertEqual(discussion.messages.count(), 2)
+
+        ampelmann = User.objects.get(username='ampelmann')
+
+        message = discussion.messages.get(sender=ampelmann)
+
+        self.assertEqual(message.body, 'My reply')
+
     def test_valid_discussion_remove(self):
         """ ``POST`` to remove a message """
         # Test that sign in is required

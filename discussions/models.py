@@ -1,12 +1,13 @@
 from datetime import datetime
 
 from django.db import models
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.utils.text import truncate_words
 
 from discussions.managers import (DiscussionManager, DiscussionContactManager,
-                                  DiscussionRecipientManager)
+                                  DiscussionRecipientManager, MessageManager)
 
 from model_utils import Choices
 
@@ -129,6 +130,8 @@ class Discussion(models.Model):
                                              null=True,
                                              blank=True)
 
+    latest_message = models.ForeignKey('Message', null=True, blank=True, related_name='latest_discussions')
+
     subject = models.CharField(max_length=255)
 
     objects = DiscussionManager()
@@ -137,6 +140,9 @@ class Discussion(models.Model):
         ordering = ['-created_at']
         verbose_name = _('discussion')
         verbose_name_plural = _('discussions')
+        permissions = (
+            ('can_view', 'Can view'),
+        )
 
     def __unicode__(self):
         return 'Discussion opened by %s' % self.sender
@@ -189,6 +195,22 @@ class Discussion(models.Model):
 
         return m
 
+    def get_absolute_url(self):
+        return reverse('discussions_detail', kwargs={
+            'discussion_id': self.pk
+        })
+
+    def can_view(self, user):
+        if not user or not user.is_authenticated():
+            return False
+
+        if (user.is_staff or user.is_superuser or
+            (user.id in [u['id']
+                         for u in self.recipients.values('id')])):
+            return True
+
+        return user.has_perm('discussions.can_view')
+
 
 class Message(models.Model):
     """ Private message model, from user to user(s) """
@@ -208,6 +230,8 @@ class Message(models.Model):
     sender_deleted_at = models.DateTimeField(_('sender deleted at'),
                                              null=True,
                                              blank=True)
+
+    objects = MessageManager()
 
     class Meta:
         ordering = ['-sent_at']
