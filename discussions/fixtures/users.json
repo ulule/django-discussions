@@ -1,0 +1,56 @@
+[
+  {
+    "pk": 1,
+    "model": "auth.user",
+    "fields": {
+      "username": "thoas",
+      "first_name": "Florent",
+      "last_name": "Message",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "last_login": "2010-08-18 03:07:03",
+      "groups": [ ],
+      "user_permissions": [ ],
+      "password": "pbkdf2_sha256$10000$21NdjQV7H6QR$8Cp9vw6hLkNOUgWdmAcjdTM4krr+Qnzk1c3xuY70a8w=",
+      "email": "thoas@example.com",
+      "date_joined": "2010-08-17 10:31:55"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "auth.user",
+    "fields": {
+      "username": "ampelmann",
+      "first_name": "Thomas",
+      "last_name": "Grange",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2010-08-18 03:15:19",
+      "groups": [ ],
+      "user_permissions": [ ],
+      "password": "pbkdf2_sha256$10000$21NdjQV7H6QR$8Cp9vw6hLkNOUgWdmAcjdTM4krr+Qnzk1c3xuY70a8w=",
+      "email": "ampelmann@example.com",
+      "date_joined": "2010-08-18 03:13:57"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "auth.user",
+    "fields": {
+      "username": "oleiade",
+      "first_name": "Theo",
+      "last_name": "Crevon",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2010-08-18 03:15:19",
+      "groups": [ ],
+      "user_permissions": [ ],
+      "password": "pbkdf2_sha256$10000$21NdjQV7H6QR$8Cp9vw6hLkNOUgWdmAcjdTM4krr+Qnzk1c3xuY70a8w=",
+      "email": "oleiade@example.com",
+      "date_joined": "2010-08-18 03:13:57"
+    }
+  }
+]
