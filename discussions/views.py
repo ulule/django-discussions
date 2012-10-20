@@ -13,14 +13,14 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.db import models
 from django.http import Http404
 
-from discussions.models import DiscussionRecipient, Discussion
+from discussions.models import Recipient, Discussion
 from discussions.forms import ComposeForm, ReplyForm
 
 
 class DiscussionListView(ListView):
     template_name = 'discussions/list.html'
     paginate_by = 50
-    model = DiscussionRecipient
+    model = Recipient
     context_object_name = 'discussion_list'
 
     def get_queryset(self):
@@ -63,9 +63,9 @@ class DiscussionDetailView(DetailView, FormMixin):
         if not self.is_allowed(self.request.user):
             raise Http404
 
-        recipients = DiscussionRecipient.objects.filter(discussion=self.object,
-                                                        user=self.request.user,
-                                                        read_at__isnull=True)
+        recipients = Recipient.objects.filter(discussion=self.object,
+                                              user=self.request.user,
+                                              read_at__isnull=True)
 
         now = datetime.now()
         recipients.update(read_at=now)

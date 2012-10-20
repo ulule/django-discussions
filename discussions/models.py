@@ -6,13 +6,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.utils.text import truncate_words
 
-from discussions.managers import (DiscussionManager, DiscussionContactManager,
-                                  DiscussionRecipientManager, MessageManager)
+from discussions.managers import (DiscussionManager, ContactManager,
+                                  RecipientManager, MessageManager)
 
 from model_utils import Choices
 
 
-class DiscussionContact(models.Model):
+class Contact(models.Model):
     """
     Contact model.
 
@@ -29,7 +29,7 @@ class DiscussionContact(models.Model):
     latest_discussion = models.ForeignKey('Discussion',
                                           verbose_name=_("latest discussion"))
 
-    objects = DiscussionContactManager()
+    objects = ContactManager()
 
     class Meta:
         unique_together = ('from_user', 'to_user')
@@ -59,7 +59,7 @@ class DiscussionContact(models.Model):
         return self.from_user
 
 
-class DiscussionRecipient(models.Model):
+class Recipient(models.Model):
     """
     Intermediate model to allow per recipient marking as
     deleted, read etc. of a message.
@@ -88,7 +88,7 @@ class DiscussionRecipient(models.Model):
                                               verbose_name=_('Status'),
                                               db_index=True)
 
-    objects = DiscussionRecipientManager()
+    objects = RecipientManager()
 
     class Meta:
         verbose_name = _('recipient')
@@ -160,8 +160,8 @@ class Discussion(models.Model):
         """
         created = False
         for user in to_user_list:
-            DiscussionRecipient.objects.create(user=user,
-                                               discussion=self)
+            Recipient.objects.create(user=user,
+                                     discussion=self)
             created = True
         return created
 
@@ -178,9 +178,9 @@ class Discussion(models.Model):
         """
         updated = False
         for user in to_user_list:
-            DiscussionContact.objects.update_contact(self.sender,
-                                                     user,
-                                                     self)
+            Contact.objects.update_contact(self.sender,
+                                           user,
+                                           self)
             updated = True
         return updated
 

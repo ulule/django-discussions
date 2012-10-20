@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.db.models import signals
 
 
-class DiscussionContactManager(models.Manager):
+class ContactManager(models.Manager):
     """ Manager for the :class:`MessageContact` model """
 
     def get_or_create(self, from_user, to_user, discussion):
@@ -91,7 +91,7 @@ class DiscussionManager(models.Manager):
         return messages
 
 
-class DiscussionRecipientManager(models.Manager):
+class RecipientManager(models.Manager):
     """ Manager for the :class:`MessageRecipient` model. """
 
     def count_unread_messages_for(self, user):

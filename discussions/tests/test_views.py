@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
 from discussions.forms import ComposeForm
-from discussions.models import Message, DiscussionRecipient, Discussion
+from discussions.models import Message, Recipient, Discussion
 
 
 class MessagesViewsTests(TestCase):
@@ -91,8 +91,8 @@ class MessagesViewsTests(TestCase):
 
         # Test that the message is read.
         ampelmann = User.objects.get(pk=2)
-        mr = DiscussionRecipient.objects.get(discussion=Discussion.objects.get(pk=1),
-                                             user=ampelmann)
+        mr = Recipient.objects.get(discussion=Discussion.objects.get(pk=1),
+                                   user=ampelmann)
         self.failUnless(mr.read_at)
 
     def test_discussion_detail_new_message(self):
@@ -220,8 +220,8 @@ class MessagesViewsTests(TestCase):
         # Check that all the messages are marked as read.
         thoas = User.objects.get(pk=1)
         oleiade = User.objects.get(pk=3)
-        unread_messages = DiscussionRecipient.objects.filter(user=thoas,
-                                                             discussion__sender=oleiade,
-                                                             read_at__isnull=True)
+        unread_messages = Recipient.objects.filter(user=thoas,
+                                                   discussion__sender=oleiade,
+                                                   read_at__isnull=True)
 
         self.assertEqual(len(unread_messages), 0)
