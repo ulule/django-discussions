@@ -12,7 +12,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.db import models
 from django.http import Http404
 
-from discussions.models import Recipient, Discussion, Folder
+from discussions.models import Discussion, Folder, Recipient
 from discussions.forms import ComposeForm, ReplyForm, FolderForm
 from discussions import settings
 
