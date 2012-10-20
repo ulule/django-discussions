@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from discussions.forms import ComposeForm
+from discussions.forms import ComposeForm, ReplyForm
+from discussions.models import Discussion
 
 
 class ComposeFormTests(TestCase):
@@ -30,7 +31,7 @@ class ComposeFormTests(TestCase):
             self.assertEqual(form.errors[invalid_dict['error'][0]],
                              invalid_dict['error'][1])
 
-    def test_save_msg(self):
+    def test_save_discussion(self):
         """ Test valid data """
         valid_data = {'to': 'thoas,ampelmann',
                       'body': 'Body',
@@ -59,3 +60,26 @@ class ComposeFormTests(TestCase):
         # Check recipients
         self.failUnlessEqual(discussion.recipients.all()[0].username, 'ampelmann')
         self.failUnlessEqual(discussion.recipients.all()[1].username, 'thoas')
+
+
+class ReplyFormTests(TestCase):
+    fixtures = ['users', 'messages']
+
+    def test_save_message(self):
+        valid_data = {'body': 'Body'}
+
+        discussion = Discussion.objects.get(pk=1)
+
+        form = ReplyForm(discussion=discussion, data=valid_data)
+
+        self.failUnless(form.is_valid())
+
+        sender = User.objects.get(username='oleiade')
+
+        message = form.save(sender)
+
+        self.failUnlessEqual(message.body, valid_data['body'])
+
+        self.assertEqual(discussion.messages.count(), 2)
+
+        self.assertEqual(message.sender, sender)
