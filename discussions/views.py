@@ -103,14 +103,20 @@ class DiscussionDetailView(DetailView, FormMixin):
 class MessageComposeView(FormView):
     form_class = ComposeForm
     template_name = 'discussions/form.html'
+    submit_key = 'submit'
 
     def get_template_names(self):
         return [self.template_name, ]
 
     def get_initial(self):
-        if self.kwargs.get('recipients'):
+        recipients = None
+
+        if self.request.method == 'POST':
+            recipients = self.request.POST.get('recipients', None)
+        elif self.kwargs.get('recipients'):
             recipients = self.kwargs.get('recipients')
 
+        if recipients:
             username_list = [r.strip() for r in recipients.split('+')]
             recipients = [u for u in User.objects.filter(username__in=username_list)]
 
@@ -146,6 +152,12 @@ class MessageComposeView(FormView):
                                   kwargs={'discussion_id': self.object.pk})
 
         return redirect_to
+
+    def post(self, request, *args, **kwargs):
+        if self.submit_key in request.POST:
+            return super(MessageComposeView, self).post(request, *args, **kwargs)
+
+        return self.get(request, *args, **kwargs)
 
 
 @require_http_methods(['POST'])

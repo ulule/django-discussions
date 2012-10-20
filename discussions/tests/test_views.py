@@ -38,7 +38,13 @@ class MessagesViewsTests(TestCase):
                       'body': 'Hi mister',
                       'subject': 'Hi'}
 
-        # Check for a normal redirect
+        response = self.client.post(reverse('discussions_compose'),
+                                    data=valid_data)
+
+        self.assertEqual(response.status_code, 200)
+
+        valid_data['submit'] = 'submit'
+
         response = self.client.post(reverse('discussions_compose'),
                                     data=valid_data)
 
@@ -53,15 +59,38 @@ class MessagesViewsTests(TestCase):
         self.assertRedirects(response,
                              valid_data['next'])
 
-    def test_compose_recipients(self):
+    def test_compose_recipients_get(self):
         """ A ``GET`` to the compose view with recipients """
         self.client.login(username='thoas', password='$ecret')
 
         valid_recipients = "thoas+oleiade"
 
         # Test valid recipients
-        response = self.client.get(reverse('discussions_compose_to',
+        response = self.client.get(reverse('discussions_compose',
                                            kwargs={'recipients': valid_recipients}))
+
+        self.assertEqual(response.status_code, 200)
+
+        # Test the users
+        oleiade = User.objects.get(username='oleiade')
+        thoas = User.objects.get(username='thoas')
+        self.assertEqual(response.context['recipients'][0], oleiade)
+        self.assertEqual(response.context['recipients'][1], thoas)
+
+        # Test that the initial data of the form is set.
+        self.assertEqual(response.context['form'].initial['to'],
+                         [oleiade, thoas])
+
+    def test_compose_recipients_post(self):
+        """ A ``POST`` to the compose view with recipients """
+        self.client.login(username='thoas', password='$ecret')
+
+        valid_recipients = "thoas+oleiade"
+
+        # Test valid recipients
+        response = self.client.post(reverse('discussions_compose'), data={
+            'recipients': valid_recipients
+        })
 
         self.assertEqual(response.status_code, 200)
 

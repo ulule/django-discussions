@@ -6,13 +6,9 @@ from discussions import views
 
 urlpatterns = patterns(
     '',
-    url(r'^compose/$',
+    url(r'^compose(?:\/(?P<recipients>[\+\.\w]+))?/$',
         login_required(views.MessageComposeView.as_view()),
         name='discussions_compose'),
-
-    url(r'^compose/(?P<recipients>[\+\.\w]+)/$',
-        login_required(views.MessageComposeView.as_view()),
-        name='discussions_compose_to'),
 
     url(r'^reply/(?P<parent_id>[\d]+)/$',
         login_required(views.MessageComposeView.as_view()),
