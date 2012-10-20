@@ -2,11 +2,11 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from discussions.forms import ComposeForm
-from discussions.models import Message, Recipient, Discussion
+from discussions.forms import ComposeForm, FolderForm
+from discussions.models import Message, Recipient, Discussion, Folder
 
 
-class MessagesViewsTests(TestCase):
+class DiscussionsViewsTests(TestCase):
     fixtures = ['users', 'messages']
 
     def _test_login(self, named_url, **kwargs):
@@ -254,3 +254,69 @@ class MessagesViewsTests(TestCase):
                                                    read_at__isnull=True)
 
         self.assertEqual(len(unread_messages), 0)
+
+    def test_folder_create(self):
+        self._test_login('discussions_folder_create')
+
+        self.client.login(username='thoas', password='$ecret')
+
+        response = self.client.get(reverse('discussions_folder_create'))
+
+        self.assertEqual(response.status_code, 200)
+
+        self.failUnless(isinstance(response.context['form'], FolderForm))
+        self.assertTemplateUsed(response,
+                                'discussions/folder/create.html')
+
+        data = {
+            'name': 'My folder'
+        }
+
+        response = self.client.post(reverse('discussions_folder_create'), data=data)
+
+        self.assertEqual(Folder.objects.count(), 2)
+
+        folder = Folder.objects.get(pk=2)
+
+        self.assertEqual(folder.name, data['name'])
+
+        self.assertRedirects(response,
+                             reverse('discussions_folder_detail', kwargs={
+                                 'folder_id': folder.pk
+                             }))
+
+    def test_folder_update(self):
+        folder = Folder.objects.get(pk=1)
+
+        self._test_login('discussions_folder_update', kwargs={
+            'folder_id': folder.pk
+        })
+
+        self.client.login(username='thoas', password='$ecret')
+
+        response = self.client.get(reverse('discussions_folder_update', kwargs={
+            'folder_id': folder.pk
+        }))
+
+        self.assertEqual(response.status_code, 200)
+
+        self.failUnless(isinstance(response.context['form'], FolderForm))
+        self.assertTemplateUsed(response,
+                                'discussions/folder/update.html')
+
+        data = {
+            'name': 'My folder new name'
+        }
+
+        response = self.client.post(reverse('discussions_folder_update', kwargs={
+            'folder_id': folder.pk
+        }), data=data)
+
+        folder = Folder.objects.get(pk=1)
+
+        self.assertEqual(folder.name, data['name'])
+
+        self.assertRedirects(response,
+                             reverse('discussions_folder_update', kwargs={
+                                 'folder_id': folder.pk
+                             }))

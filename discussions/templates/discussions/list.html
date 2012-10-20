@@ -9,24 +9,9 @@
     {% blocktrans %}{{ unread_message_count }} new messages.{% endblocktrans %}
     <a href="{% url "discussions_compose" %}">{% trans "Compose" %}</a>
     <ul>
-        {% for discussion in discussion_list %}
+        {% for recipient in recipient_list %}
             <li>
-                <div class="recipient-list">
-                    {% for recipient in discussion.recipients.all %}
-                        <ul>
-                            {% if recipient != user %}
-                                <li><a href="{% url discussion_list user.username %}">{{ recipient }}</a></li>
-                            {% endif %}
-                        </ul>
-                    {% endfor %}
-                </div>
-
-                <h2>{{ discussion.title }}</h2>
-
-                {% if discussion.last_message %}
-                    <p>{{ discussion.last_message.body }}</p>
-                    <em>{% blocktrans with author=discussion.last_message.user %}By {{ author }}{% endblocktrans %}</em>
-                {% endif %}
+                {% include "discussions/_discussion.html" with discussion=discussion %}
             </li>
         {% endfor %}
     </ul>

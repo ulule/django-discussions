@@ -1,0 +1,18 @@
+{% extends "discussions/base.html" %}
+
+{% load i18n %}
+{% load url from future %}
+
+{% block content_title %}<h2>{% blocktrans with name=folder.name %}Folder "{{ name }}"{% endblocktrans %}</h2>{% endblock %}
+
+{% block content %}
+    <a href="{% url "discussions_folder_create" %}">{% trans "Create a new folder" %}</a>
+
+    <ul>
+        {% for discussion in discussion_list %}
+            <li>
+                {% include "discussions/_discussion.html" %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

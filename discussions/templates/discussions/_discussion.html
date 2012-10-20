@@ -1,0 +1,16 @@
+<div class="recipient-list">
+    {% for recipient in discussion.recipients.all %}
+        <ul>
+            {% if recipient != user %}
+                <li><a href="{% url discussion_list user.username %}">{{ recipient }}</a></li>
+            {% endif %}
+        </ul>
+    {% endfor %}
+</div>
+
+<h2>{{ discussion.title }}</h2>
+
+{% if discussion.last_message %}
+    <p>{{ discussion.last_message.body }}</p>
+    <em>{% blocktrans with author=discussion.last_message.user %}By {{ author }}{% endblocktrans %}</em>
+{% endif %}

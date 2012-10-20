@@ -1,13 +1,13 @@
 {% extends "discussions/base.html" %}
 {% load i18n %}
 
-{% block content_title %}<h2>{% trans "Compose" %}</h2>{% endblock %}
+{% block content_title %}<h2>{% trans "Create a folder" %}</h2>{% endblock %}
 
 {% block content %}
-    <form action="" method="post" id="compose-form">
+    <form action="" method="post" id="create-folder-form">
         {% csrf_token %}
         <fieldset>
-            <legend>{% trans "Compose message" %}</legend>
+            <legend>{% trans "Create folder" %}</legend>
             {{ form.as_p }}
         </fieldset>
         <input type="submit" name="submit" value="{% trans "Send" %}" />

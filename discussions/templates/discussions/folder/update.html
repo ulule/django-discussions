@@ -1,0 +1,15 @@
+{% extends "discussions/base.html" %}
+{% load i18n %}
+
+{% block content_title %}<h2>{% blocktrans with name=folder.name %}Update folder "{{ name }}"{% endblocktrans %}</h2>{% endblock %}
+
+{% block content %}
+    <form action="" method="post" id="update-folder-form">
+        {% csrf_token %}
+        <fieldset>
+            <legend>{% blocktrans with name=folder.name %}Update folder "{{ name }}"{% endblocktrans %}</legend>
+            {{ form.as_p }}
+        </fieldset>
+        <input type="submit" name="submit" value="{% trans "Send" %}" />
+    </form>
+{% endblock %}

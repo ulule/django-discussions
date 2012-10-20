@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.views.generic import DetailView, FormView, ListView
-from django.views.generic.edit import FormMixin
+from django.views.generic.edit import FormMixin, CreateView, UpdateView
 from django.views.decorators.http import require_http_methods
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
@@ -12,15 +12,15 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.db import models
 from django.http import Http404
 
-from discussions.models import Recipient, Discussion
-from discussions.forms import ComposeForm, ReplyForm
+from discussions.models import Recipient, Discussion, Folder
+from discussions.forms import ComposeForm, ReplyForm, FolderForm
 
 
 class DiscussionListView(ListView):
     template_name = 'discussions/list.html'
     paginate_by = 50
     model = Recipient
-    context_object_name = 'discussion_list'
+    context_object_name = 'recipient_list'
 
     def get_queryset(self):
         if self.kwargs.get('username'):
@@ -235,3 +235,66 @@ def discussion_remove(request, undo=False):
         return redirect(redirect_to)
 
     return redirect(reverse('discussions_list'))
+
+
+class FolderCreateView(CreateView):
+    form_class = FolderForm
+    template_name = 'discussions/folder/create.html'
+
+    def form_valid(self, form):
+        self.object = form.save(self.request.user)
+
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('discussions_folder_detail', kwargs={
+            'folder_id': self.object.pk
+        })
+
+
+class FolderUpdateView(UpdateView):
+    form_class = FolderForm
+    model = Folder
+    template_name = 'discussions/folder/update.html'
+    pk_url_kwarg = 'folder_id'
+
+    def get_queryset(self):
+        return self.model.objects.filter(pk=self.kwargs.get(self.pk_url_kwarg),
+                                         user=self.request.user)
+
+    def form_valid(self, form):
+        self.object = form.save(self.request.user)
+
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('discussions_folder_update', kwargs={
+            'folder_id': self.object.pk
+        })
+
+
+class FolderDetailView(ListView):
+    model = Folder
+    template_name = 'discussions/folder/detail.html'
+    context_object_name = 'discussion_list'
+    context_object = 'folder'
+
+    def get_object(self):
+        obj = get_object_or_404(Folder.objects.filter(user=self.request.user),
+                                pk=self.kwargs.get('folder_id'))
+
+        self.object = obj
+
+        return obj
+
+    def get_context_data(self, **kwargs):
+        data = super(FolderDetailView, self).get_context_data(**kwargs)
+
+        data[self.context_object] = self.object
+
+        return data
+
+    def get_queryset(self):
+        return (self.get_object()
+                .discussions
+                .order_by('-created_at'))

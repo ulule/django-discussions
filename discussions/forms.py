@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from discussions.fields import CommaSeparatedUserField
-from discussions.models import Discussion
+from discussions.models import Discussion, Folder
 
 
 class ComposeForm(forms.Form):
@@ -52,4 +52,10 @@ class ReplyForm(forms.Form):
 
 class FolderForm(forms.ModelForm):
     class Meta:
-        exclude = ('user', 'messages', 'created_at')
+        exclude = ('user', 'discussions', 'created_at')
+        model = Folder
+
+    def save(self, user):
+        self.instance.user = user
+
+        return super(FolderForm, self).save()

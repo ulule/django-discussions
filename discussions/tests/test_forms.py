@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from discussions.forms import ComposeForm, ReplyForm
+from discussions.forms import ComposeForm, ReplyForm, FolderForm
 from discussions.models import Discussion
 
 
@@ -83,3 +83,20 @@ class ReplyFormTests(TestCase):
         self.assertEqual(discussion.messages.count(), 2)
 
         self.assertEqual(message.sender, sender)
+
+
+class FolderFormTests(TestCase):
+    fixtures = ['users']
+
+    def test_save_folder(self):
+        valid_data = {'name': 'My folder'}
+
+        form = FolderForm(data=valid_data)
+
+        self.failUnless(form.is_valid())
+
+        sender = User.objects.get(username='oleiade')
+
+        folder = form.save(sender)
+
+        self.failUnlessEqual(folder.name, valid_data['name'])

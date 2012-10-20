@@ -254,7 +254,7 @@ class Folder(models.Model):
 
     user = models.ForeignKey(User)
 
-    messages = models.ManyToManyField(Message)
+    discussions = models.ManyToManyField(Discussion)
 
     class Meta:
         ordering = ['-created_at']
