@@ -142,8 +142,8 @@ class MessagesViewsTests(TestCase):
         self.assertRedirects(response,
                              reverse('discussions_list'))
         ampelmann = User.objects.get(username='ampelmann')
-        dr = d.discussionrecipient_set.get(user=ampelmann,
-                                           discussion=d)
+        dr = d.recipient_set.get(user=ampelmann,
+                                 discussion=d)
         self.failUnless(dr.deleted_at)
 
     def test_invalid_discussion_remove(self):

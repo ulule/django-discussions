@@ -48,3 +48,8 @@ class ReplyForm(forms.Form):
 
     def save(self, sender):
         return self.discussion.add_message(self.cleaned_data['body'], sender)
+
+
+class FolderForm(forms.ModelForm):
+    class Meta:
+        exclude = ('user', 'messages', 'created_at')

@@ -20,10 +20,12 @@ class Contact(models.Model):
     received a message from.
 
     """
-    from_user = models.ForeignKey(User, verbose_name=_('from user'),
+    from_user = models.ForeignKey(User,
+                                  verbose_name=_('from user'),
                                   related_name=('from_users'))
 
-    to_user = models.ForeignKey(User, verbose_name=_('to user'),
+    to_user = models.ForeignKey(User,
+                                verbose_name=_('to user'),
                                 related_name=('to_users'))
 
     latest_discussion = models.ForeignKey('Discussion',
@@ -117,7 +119,7 @@ class Discussion(models.Model):
                                verbose_name=_('sender'))
 
     recipients = models.ManyToManyField(User,
-                                        through='DiscussionRecipient',
+                                        through='Recipient',
                                         related_name='received_discussions',
                                         verbose_name=_('recipients'))
 
@@ -242,3 +244,22 @@ class Message(models.Model):
         """ Human representation, displaying first ten words of the body. """
         truncated_body = truncate_words(self.body, 10)
         return "%(truncated_body)s" % {'truncated_body': truncated_body}
+
+
+class Folder(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_('Name'))
+
+    created_at = models.DateTimeField(_('created at'),
+                                      auto_now_add=True)
+
+    user = models.ForeignKey(User)
+
+    messages = models.ManyToManyField(Message)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = _('folder')
+        verbose_name_plural = _('folders')
+
+    def __unicode__(self):
+        return self.name

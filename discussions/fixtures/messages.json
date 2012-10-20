@@ -39,7 +39,7 @@
   },
   {
     "pk": 1,
-    "model": "discussions.discussionrecipient",
+    "model": "discussions.recipient",
     "fields": {
       "discussion": 1,
       "read_at": null,
@@ -49,7 +49,7 @@
   },
   {
     "pk": 3,
-    "model": "discussions.discussionrecipient",
+    "model": "discussions.recipient",
     "fields": {
       "discussion": 1,
       "read_at": null,
@@ -59,7 +59,7 @@
   },
   {
     "pk": 2,
-    "model": "discussions.discussionrecipient",
+    "model": "discussions.recipient",
     "fields": {
       "discussion": 2,
       "read_at": "2010-01-01 12:00:00",
@@ -69,7 +69,7 @@
   },
   {
     "pk": 4,
-    "model": "discussions.discussionrecipient",
+    "model": "discussions.recipient",
     "fields": {
       "discussion": 2,
       "read_at": "2010-01-01 12:00:00",
@@ -79,7 +79,7 @@
   },
   {
     "pk": 1,
-    "model": "discussions.discussioncontact",
+    "model": "discussions.contact",
     "fields": {
       "from_user": 1,
       "to_user": 2,

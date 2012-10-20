@@ -1,6 +1,6 @@
 from django import template
 
-from discussions.models import DiscussionRecipient
+from discussions.models import Recipient
 
 import re
 
@@ -23,7 +23,7 @@ class MessageCount(template.Node):
             return ''
 
         if not self.to_user:
-            message_count = DiscussionRecipient.objects.count_unread_messages_for(user)
+            message_count = Recipient.objects.count_unread_messages_for(user)
 
         else:
             try:
@@ -31,8 +31,8 @@ class MessageCount(template.Node):
             except template.VariableDoesNotExist:
                 return ''
 
-            message_count = DiscussionRecipient.objects.count_unread_messages_between(user,
-                                                                                      to_user)
+            message_count = Recipient.objects.count_unread_messages_between(user,
+                                                                            to_user)
 
         context[self.var_name] = message_count
 

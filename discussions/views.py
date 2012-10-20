@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.edit import FormMixin
 from django.views.decorators.http import require_http_methods
@@ -37,9 +36,6 @@ class DiscussionListView(ListView):
         return (self.model.objects
                 .filter(user=self.request.user)
                 .order_by('-discussion__created_at'))
-
-
-discussion_list = login_required(DiscussionListView.as_view())
 
 
 class DiscussionDetailView(DetailView, FormMixin):
@@ -104,9 +100,6 @@ class DiscussionDetailView(DetailView, FormMixin):
         })
 
 
-discussion_detail = login_required(DiscussionDetailView.as_view())
-
-
 class MessageComposeView(FormView):
     form_class = ComposeForm
     template_name = 'discussions/form.html'
@@ -155,10 +148,6 @@ class MessageComposeView(FormView):
         return redirect_to
 
 
-message_compose = login_required(MessageComposeView.as_view())
-
-
-@login_required
 @require_http_methods(['POST'])
 def discussion_remove(request, undo=False):
     """
@@ -209,8 +198,8 @@ def discussion_remove(request, undo=False):
                 changed_message_list.add(discussion.pk)
 
             # Check if the user is a recipient of the message
-            recipients = discussion.discussionrecipient_set.filter(user=request.user,
-                                                                   discussion=discussion)
+            recipients = discussion.recipient_set.filter(user=request.user,
+                                                         discussion=discussion)
 
             if recipients:
                 for recipient in recipients:
