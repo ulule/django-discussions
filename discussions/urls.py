@@ -10,10 +10,6 @@ urlpatterns = patterns(
         login_required(views.MessageComposeView.as_view()),
         name='discussions_compose'),
 
-    url(r'^reply/(?P<parent_id>[\d]+)/$',
-        login_required(views.MessageComposeView.as_view()),
-        name='discussions_reply'),
-
     url(r'^view/(?P<discussion_id>[\d]+)/$',
         login_required(views.DiscussionDetailView.as_view()),
         name='discussions_detail'),
