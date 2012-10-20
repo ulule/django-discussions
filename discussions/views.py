@@ -14,11 +14,12 @@ from django.http import Http404
 
 from discussions.models import Recipient, Discussion, Folder
 from discussions.forms import ComposeForm, ReplyForm, FolderForm
+from discussions import settings
 
 
 class DiscussionListView(ListView):
     template_name = 'discussions/list.html'
-    paginate_by = 50
+    paginate_by = settings.PAGINATE_BY
     model = Recipient
     context_object_name = 'recipient_list'
 
@@ -278,6 +279,7 @@ class FolderDetailView(ListView):
     template_name = 'discussions/folder/detail.html'
     context_object_name = 'discussion_list'
     context_object = 'folder'
+    paginate_by = settings.PAGINATE_BY
 
     def get_object(self):
         obj = get_object_or_404(Folder.objects.filter(user=self.request.user),
