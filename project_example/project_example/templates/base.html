@@ -1,0 +1,31 @@
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="fr-fr">
+<head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+
+    {% block extra_head %}
+
+    {% endblock %}
+</head>
+<body>
+    <ul>
+        {% if user.is_authenticated %}
+            <li><a href="{% url auth_logout %}" title="{% trans "Logout" %}">{% trans "Logout" %}</a></li>
+            <li><a href="{% url auth_password_change %}" title="{% trans "Change my password" %}">{% trans "Change my password" %}</a></li>
+        {% else %}
+            <li><a href="{% url registration_register %}" title="{% trans "Register" %}">{% trans "Register" %}</a></li>
+        {% endif %}
+    </ul>
+
+    {% block content %}
+
+    {% endblock %}
+
+    {% block extra_javascript %}
+
+    {% endblock %}
+</body>
+</html>

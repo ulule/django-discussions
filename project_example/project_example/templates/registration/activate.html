@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Account activated" %}{% endblock %}
+
+{% block content %}
+    <h2>{% trans "Account activated." %}</h2>
+    {% if account %}
+        <p>
+            {% trans "Thanks for signing up!" %} 
+            {% blocktrans %}Now you can <a href="/accounts/login/">log in</a>.{% endblocktrans %}
+        </p>
+    {% else %}
+        <p>
+        {% blocktrans with expiration_days as expiration_days %}
+            Sorry, it didn't work. Either your activation link was incorrect, or
+            the activation key for your account has expired; activation keys are
+            only valid for {{ expiration_days }} days after
+            registration.
+        {% endblocktrans %}
+        </p>
+    {% endif %}
+{% endblock %}

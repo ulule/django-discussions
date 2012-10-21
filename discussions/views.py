@@ -29,14 +29,16 @@ class DiscussionListView(ListView):
 
             user = get_object_or_404(User, username=username)
 
-            return (self.model.objects
-                    .filter(models.Q(user=self.request.user, discussion__sender=user) |
-                            models.Q(user=user, discussion__sender=self.request.user))
-                    .order_by('-discussion__created_at'))
+            qs = (self.model.objects
+                  .filter(models.Q(user=self.request.user, discussion__sender=user) |
+                          models.Q(user=user, discussion__sender=self.request.user))
+                  .order_by('-discussion__created_at'))
+        else:
+            qs = (self.model.objects
+                  .filter(user=self.request.user)
+                  .order_by('-discussion__created_at'))
 
-        return (self.model.objects
-                .filter(user=self.request.user)
-                .order_by('-discussion__created_at'))
+        return qs
 
 
 class DiscussionDetailView(DetailView, FormMixin):

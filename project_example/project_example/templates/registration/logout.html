@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Logged out" %}{% endblock %}
+
+{% block content %}
+    <h2>{% trans "You've been logged out." %}</h2>
+    {% url auth_login as login_url %}
+    <p>{% blocktrans %}Thanks for stopping by; when you come back, don't forget to <a href="{{ login_url }}">log in</a> again.{% endblocktrans %}</p>
+{% endblock %}

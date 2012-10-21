@@ -23,7 +23,7 @@ urlpatterns = patterns(
         {'undo': True},
         name='discussions_unremove'),
 
-    url(r'^(?:\/(?P<username>[\.\w]+))?$',
+    url(r'^(?:(?P<username>[\.\w]+))?$',
         login_required(views.DiscussionListView.as_view()),
         name='discussions_list'),
 

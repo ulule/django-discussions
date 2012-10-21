@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Sign up" %}{% endblock %}
+
+{% block content %}
+    {% if form.errors %}
+        <p class="errors">{% trans "Please correct the errors below:" %} {{ form.non_field_errors }}</p>
+    {% endif %}
+
+    <h2>{% trans "Create an account" %}</h2>
+
+    <p>
+    {% blocktrans %}Creating an account is required in order to contribute quotes on this website.{% endblocktrans %}
+    {% blocktrans %}Fill up the form below to create your account, then  an email will be sent in order to activate it.{% endblocktrans %}
+    </p>
+
+    <form method="post" action="" class="wide">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <p>
+            <input type="submit" value="{% trans "Register" %} &rarr;">
+        </p>
+    </form>
+{% endblock %}
+
+{% block about %}
+    <p>{% blocktrans %}Fill out the form to the left (all fields are required), and your
+        account will be created; you'll be sent an email with instructions on how
+    to finish your registration.{% endblocktrans %}</p>
+
+    <p>{% blocktrans %}We'll only use your email to send you signup instructions. We hate spam
+    as much as you do.{% endblocktrans %}</p>
+{% endblock %}

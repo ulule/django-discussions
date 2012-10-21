@@ -11,7 +11,7 @@
     <ul>
         {% for recipient in recipient_list %}
             <li>
-                {% include "discussions/_discussion.html" with discussion=discussion %}
+                {% include "discussions/_discussion.html" with discussion=recipient.discussion %}
             </li>
         {% endfor %}
     </ul>

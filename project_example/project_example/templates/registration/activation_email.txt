@@ -1,0 +1,9 @@
+{% load i18n %}
+{% trans "Someone, hopefully you, signed up for a new account at Fortune using this email address." %}
+{% trans "If it was you, and you'd like to activate and use your account, click the link below or copy and paste it into your web browser's address bar:" %}
+
+http://example.com/accounts/activate/{{ activation_key }}/
+
+{% blocktrans with expiration_days as expiration_days %}
+If you didn't request this, you don't need to do anything; you won't receive any more email from us, and the account will expire automatically in {{ expiration_days }} days.
+{% endblocktrans %}
