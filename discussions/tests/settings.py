@@ -1,3 +1,5 @@
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -25,3 +27,7 @@ INSTALLED_APPS = [
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 ROOT_URLCONF = 'discussions.urls'
+
+TEMPLATE_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'templates')
+)

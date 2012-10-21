@@ -37,6 +37,7 @@ class DiscussionListView(ListView):
                   .filter(user=self.request.user))
 
         qs = (qs.exclude(status=self.model.STATUS.deleted)
+              .exclude(folder__isnull=False)
               .order_by('-discussion__created_at')
               .select_related('discussion'))
 
@@ -197,20 +198,60 @@ class MessageComposeView(FormView):
         return self.get(request, *args, **kwargs)
 
 
+class DiscussionMoveView(DetailView):
+    http_method_names = ['post']
+    model = Folder
+    pk_url_kwarg = 'folder_id'
+
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user)
+
+    def post(self, *args, **kwargs):
+        """
+        A ``POST`` to move discussions into a folder.
+
+        POST can have the following keys:
+
+            ``discussions_ids``
+                List of discussion id's that should be moved.
+        """
+
+        self.object = self.get_object()
+        self.get_context_data(object=self.object)
+
+        discussion_ids = self.request.POST.getlist('discussion_ids')
+
+        if discussion_ids:
+            # Check that all values are integers.
+            valid_discussion_id_list = set()
+            for pk in discussion_ids:
+                try:
+                    valid_pk = int(pk)
+                except (TypeError, ValueError):
+                    pass
+                else:
+                    valid_discussion_id_list.add(valid_pk)
+
+            Recipient.objects.filter(discussion__in=valid_discussion_id_list,
+                                     user=self.request.user).update(folder=self.object)
+
+        return redirect(reverse('discussions_list'))
+
+
 class DiscussionRemoveView(View):
     http_method_names = ['post']
 
     def post(self, *args, **kwargs):
         """
-        A ``POST`` to remove messages.
+        A ``POST`` to remove discussions.
 
         :param undo:
-            A Boolean that if ``True`` unremoves messages.
+            A Boolean that if ``True`` unremoves discussions.
 
         POST can have the following keys:
 
-            ``message_pks``
-                List of message id's that should be deleted.
+            ``discussions_ids``
+                List of discussion id's that should be deleted.
 
             ``next``
                 String containing the URI which to redirect to after the keys are

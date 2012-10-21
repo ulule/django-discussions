@@ -12,6 +12,8 @@ DiscussionDetailView = load_class(settings.DISCUSSION_DETAIL_VIEW)
 
 DiscussionRemoveView = load_class(settings.DISCUSSION_REMOVE_VIEW)
 
+DiscussionMoveView = load_class(settings.DISCUSSION_MOVE_VIEW)
+
 MessageComposeView = load_class(settings.MESSAGE_COMPOSE_VIEW)
 
 FolderCreateView = load_class(settings.FOLDER_CREATE_VIEW)

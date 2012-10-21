@@ -142,8 +142,52 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertEqual(message.body, 'My reply')
 
+    def test_valid_discussion_move(self):
+        """ ``POST`` to move a discussion into a folder """
+        # Test that sign in is required
+
+        folder = Folder.objects.get(pk=1)
+
+        url = reverse('discussions_move', kwargs={
+            'folder_id': folder.pk
+        })
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+
+        # Sign in
+        self.client.login(username='thoas', password='$ecret')
+
+        # Test that only posts are allowed
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+
+        response = self.client.post(url,
+                                    data={'discussion_ids': '1'})
+        self.assertRedirects(response,
+                             reverse('discussions_list'))
+
+        user = User.objects.get(username='thoas')
+
+        recipient = Recipient.objects.get(discussion=1, user=user)
+
+        self.assertEqual(recipient.folder, folder)
+
+    def test_invalid_discussion_move(self):
+        folder = Folder.objects.get(pk=1)
+
+        url = reverse('discussions_move', kwargs={
+            'folder_id': folder.pk
+        })
+
+        self.client.login(username='ampelmann', password='$ecret')
+
+        response = self.client.post(url,
+                                    data={'discussion_ids': '1'})
+
+        self.assertEqual(response.status_code, 404)
+
     def test_valid_discussion_remove(self):
-        """ ``POST`` to remove a message """
+        """ ``POST`` to remove a discussion """
         # Test that sign in is required
         response = self.client.post(reverse('discussions_remove'))
         self.assertEqual(response.status_code, 302)
@@ -155,7 +199,6 @@ class DiscussionsViewsTests(TestCase):
         response = self.client.get(reverse('discussions_remove'))
         self.assertEqual(response.status_code, 405)
 
-        # Test a valid post to delete a senders message
         response = self.client.post(reverse('discussions_remove'),
                                     data={'discussion_ids': '1'})
         self.assertRedirects(response,
@@ -163,7 +206,6 @@ class DiscussionsViewsTests(TestCase):
         d = Discussion.objects.get(pk=1)
         self.failUnless(d.sender_deleted_at)
 
-        # Test a valid post to delete a recipients message and a redirect
         self.client.login(username='ampelmann', password='$ecret')
         response = self.client.post(reverse('discussions_remove'),
                                     data={'discussion_ids': '1',
@@ -176,7 +218,7 @@ class DiscussionsViewsTests(TestCase):
         self.failUnless(dr.deleted_at)
 
     def test_invalid_discussion_remove(self):
-        """ ``POST`` to remove an invalid message """
+        """ ``POST`` to remove an invalid discussion """
         # Sign in
         self.client.login(username='thoas', password='$ecret')
 
@@ -206,10 +248,10 @@ class DiscussionsViewsTests(TestCase):
         self.assertEqual(discussion_list.count(), 1)
 
     def test_discussion_unremove(self):
-        """ Unremove a message """
+        """ Unremove a discussion """
         self.client.login(username='thoas', password='$ecret')
 
-        # Delete a message as owner
+        # Delete a discussion as owner
         response = self.client.post(reverse('discussions_unremove'),
                                     data={'discussion_pks': [1, ]})
 
@@ -224,7 +266,7 @@ class DiscussionsViewsTests(TestCase):
                              reverse('discussions_list'))
 
     def test_discussion_list(self):
-        """ ``GET`` the message list for a user """
+        """ ``GET`` the discussion list for a user """
         self._test_login("discussions_list")
 
         self.client.login(username='thoas', password='$ecret')

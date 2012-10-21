@@ -35,6 +35,10 @@ urlpatterns = patterns(
         login_required(views.DiscussionDeletedView.as_view()),
         name='discussions_deleted'),
 
+    url(r'^move/(?P<folder_id>[\d]+)$',
+        login_required(views.DiscussionMoveView.as_view()),
+        name='discussions_move'),
+
     url(r'^folder/(?P<folder_id>[\d]+)$',
         login_required(views.FolderDetailView.as_view()),
         name='discussions_folder_detail'),

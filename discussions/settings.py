@@ -34,6 +34,9 @@ DISCUSSION_DETAIL_VIEW = getattr(settings,
 DISCUSSION_REMOVE_VIEW = getattr(settings,
                                  'DISCUSSIONS_DISCUSSION_REMOVE_VIEW',
                                  'discussions.views.base.DiscussionRemoveView')
+DISCUSSION_MOVE_VIEW = getattr(settings,
+                               'DISCUSSIONS_DISCUSSION_MOVE_VIEW',
+                               'discussions.views.base.DiscussionMoveView')
 MESSAGE_COMPOSE_VIEW = getattr(settings,
                                'DISCUSSIONS_MESSAGE_COMPOSE_VIEW',
                                'discussions.views.base.MessageComposeView')
