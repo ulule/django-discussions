@@ -1,18 +1,25 @@
 {% extends "discussions/base.html" %}
-{% load i18n discussions_tags %}
+{% load i18n %}
 {% load url from future %}
 
 {% block content_title %}<h2>{% trans "Messages" %}</h2>{% endblock %}
 
 {% block content %}
-    {% get_unread_message_count_for user as unread_message_count %}
-    {% blocktrans %}{{ unread_message_count }} new messages.{% endblocktrans %}
-    <a href="{% url "discussions_compose" %}">{% trans "Compose" %}</a>
-    <ul>
-        {% for recipient in recipient_list %}
-            <li>
-                {% include "discussions/_discussion.html" with discussion=recipient.discussion %}
-            </li>
-        {% endfor %}
-    </ul>
+    {{ block.super }}
+    <form method="post" action="{% url "discussions_remove" %}">
+        {% csrf_token %}
+        <ul id="discussion-list">
+            {% for recipient in recipient_list %}
+                <li>
+                    {% include "discussions/_discussion.html" with discussion=recipient.discussion %}
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if recipient_list %}
+            <ul id="action-list">
+                <input type="submit" value="{% trans "Remove" %}" />
+            </ul>
+        {% endif %}
+    </form>
 {% endblock %}

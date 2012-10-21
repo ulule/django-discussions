@@ -36,7 +36,41 @@ class DiscussionListView(ListView):
             qs = (self.model.objects
                   .filter(user=self.request.user))
 
-        qs = qs.exclude(status=self.model.STATUS.deleted).order_by('-discussion__created_at').select_related('discussion')
+        qs = (qs.exclude(status=self.model.STATUS.deleted)
+              .order_by('-discussion__created_at')
+              .select_related('discussion'))
+
+        return qs
+
+
+class DiscussionSentView(DiscussionListView):
+    template_name = 'discussions/sent.html'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        qs = (self.model.objects
+              .filter(discussion__sender=user, user=user))
+
+        qs = (qs.exclude(status=self.model.STATUS.deleted)
+              .order_by('-discussion__created_at')
+              .select_related('discussion'))
+
+        return qs
+
+
+class DiscussionDeletedView(DiscussionListView):
+    template_name = 'discussions/deleted.html'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        qs = (self.model.objects
+              .filter(user=user))
+
+        qs = (qs.filter(status=self.model.STATUS.deleted)
+              .order_by('-discussion__created_at')
+              .select_related('discussion'))
 
         return qs
 

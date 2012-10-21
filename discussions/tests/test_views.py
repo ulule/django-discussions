@@ -233,6 +233,26 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertTemplateUsed(response, 'discussions/list.html')
 
+    def test_discussion_sent(self):
+        """ ``GET`` the message list for a user """
+        self._test_login("discussions_sent")
+
+        self.client.login(username='thoas', password='$ecret')
+        response = self.client.get(reverse('discussions_sent'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, 'discussions/sent.html')
+
+    def test_discussion_deleted(self):
+        """ ``GET`` the message list for a user """
+        self._test_login("discussions_deleted")
+
+        self.client.login(username='thoas', password='$ecret')
+        response = self.client.get(reverse('discussions_deleted'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, 'discussions/deleted.html')
+
     def test_discussion_detail_between_two_users(self):
         """ ``GET`` to a detail page between two users """
         self._test_login('discussions_list',

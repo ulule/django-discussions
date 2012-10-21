@@ -9,6 +9,7 @@
             <li>
                 {{ message.body }}
                 <p>{% blocktrans with message.sent_at as sent_at %}Received on {{ sent_at }}{% endblocktrans %}</p>
+                <em>{% blocktrans with author=message.sender %}Sent by {{ author }}{% endblocktrans %}</em>
             </li>
         {% endfor %}
     </ul>
