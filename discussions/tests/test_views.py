@@ -186,6 +186,28 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
+    def test_valid_discussion_read(self):
+        """ ``POST`` to remove a discussion """
+        # Test that sign in is required
+        response = self.client.post(reverse('discussions_read'))
+        self.assertEqual(response.status_code, 302)
+
+        # Sign in
+        self.client.login(username='thoas', password='$ecret')
+
+        # Test that only posts are allowed
+        response = self.client.get(reverse('discussions_read'))
+        self.assertEqual(response.status_code, 405)
+
+        response = self.client.post(reverse('discussions_read'),
+                                    data={'discussion_ids': '1'})
+        self.assertRedirects(response,
+                             reverse('discussions_list'))
+
+        recipient = Discussion.objects.get(pk=1).recipient_set.get(user=User.objects.get(pk=1))
+
+        self.assertTrue(recipient.is_read())
+
     def test_valid_discussion_remove(self):
         """ ``POST`` to remove a discussion """
         # Test that sign in is required

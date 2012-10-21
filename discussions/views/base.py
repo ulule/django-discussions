@@ -242,6 +242,31 @@ class DiscussionMoveView(DetailView, DiscussionBulkMixin):
         return redirect(reverse('discussions_list'))
 
 
+class DiscussionReadView(View, DiscussionBulkMixin):
+    http_method_names = ['post']
+
+    def post(self, *args, **kwargs):
+        """
+        A ``POST`` to mark as read discussions.
+
+        POST can have the following keys:
+
+            ``discussions_ids``
+                List of discussion id's that should be marked as read.
+        """
+
+        discussion_ids = self.request.POST.getlist('discussion_ids')
+
+        if discussion_ids:
+            recipients = (Recipient.objects.filter(discussion__in=self.valid_ids(discussion_ids),
+                                                   user=self.request.user)
+                          .exclude(status=Recipient.STATUS.read))
+            for recipient in recipients:
+                recipient.mark_as_read()
+
+        return redirect(reverse('discussions_list'))
+
+
 class DiscussionRemoveView(View, DiscussionBulkMixin):
     http_method_names = ['post']
 
