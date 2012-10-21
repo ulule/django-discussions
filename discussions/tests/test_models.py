@@ -57,5 +57,5 @@ class MessageRecipientModelTest(TestCase):
         new_message = Recipient.objects.get(pk=1)
         read_message = Recipient.objects.get(pk=2)
 
-        self.failUnless(new_message.is_read())
-        self.failIf(read_message.is_read())
+        self.assertFalse(new_message.is_read())
+        self.assertTrue(read_message.is_read())

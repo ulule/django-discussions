@@ -76,7 +76,12 @@ class Recipient(models.Model):
                              verbose_name=_('recipient'))
 
     discussion = models.ForeignKey('Discussion',
-                                   verbose_name=_('message'))
+                                   verbose_name=_('discussion'))
+
+    folder = models.ForeignKey('Folder',
+                               verbose_name=_('folder'),
+                               null=True, blank=True,
+                               related_name='recipients')
 
     read_at = models.DateTimeField(_('read at'),
                                    null=True,
@@ -104,11 +109,22 @@ class Recipient(models.Model):
 
     def is_read(self):
         """ Returns a boolean whether the recipient has read the message """
-        return self.read_at is None
+        return self.status == self.STATUS.read
+
+    def is_deleted(self):
+        """ Returns a boolean whether the recipient has deleted the message """
+        return self.status == self.STATUS.deleted
 
     def mark_as_deleted(self, commit=True):
         self.deleted_at = datetime.now()
         self.status = self.STATUS.deleted
+
+        if commit:
+            self.save()
+
+    def mark_as_read(self, commit=True):
+        self.read_at = datetime.now()
+        self.status = self.STATUS.read
 
         if commit:
             self.save()
@@ -257,8 +273,6 @@ class Folder(models.Model):
                                       auto_now_add=True)
 
     user = models.ForeignKey(User)
-
-    discussions = models.ManyToManyField(Discussion)
 
     class Meta:
         ordering = ['-created_at']

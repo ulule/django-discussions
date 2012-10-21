@@ -9,9 +9,9 @@
     <a href="{% url "discussions_folder_create" %}">{% trans "Create a new folder" %}</a>
 
     <ul>
-        {% for discussion in discussion_list %}
+        {% for recipient in recipient_list %}
             <li>
-                {% include "discussions/_discussion.html" %}
+                {% include "discussions/_discussion.html" with discussion=recipient.discussion %}
             </li>
         {% endfor %}
     </ul>

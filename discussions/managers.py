@@ -106,8 +106,7 @@ class RecipientManager(models.Manager):
 
         """
         unread_total = self.filter(user=user,
-                                   read_at__isnull=True,
-                                   deleted_at__isnull=True).count()
+                                   status=self.model.STATUS.unread).count()
 
         return unread_total
 
@@ -127,8 +126,7 @@ class RecipientManager(models.Manager):
         """
         unread_total = self.filter(message__sender=from_user,
                                    user=to_user,
-                                   read_at__isnull=True,
-                                   deleted_at__isnull=True).count()
+                                   status=self.model.STATUS.unread).count()
 
         return unread_total
 

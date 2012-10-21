@@ -72,6 +72,7 @@
     "fields": {
       "discussion": 2,
       "read_at": "2010-01-01 12:00:00",
+      "status": 0,
       "deleted_at": null,
       "user": 1
     }
@@ -82,6 +83,7 @@
     "fields": {
       "discussion": 2,
       "read_at": "2010-01-01 12:00:00",
+      "status": 0,
       "deleted_at": null,
       "user": 2
     }

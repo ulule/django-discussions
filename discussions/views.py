@@ -31,12 +31,12 @@ class DiscussionListView(ListView):
 
             qs = (self.model.objects
                   .filter(models.Q(user=self.request.user, discussion__sender=user) |
-                          models.Q(user=user, discussion__sender=self.request.user))
-                  .order_by('-discussion__created_at'))
+                          models.Q(user=user, discussion__sender=self.request.user)))
         else:
             qs = (self.model.objects
-                  .filter(user=self.request.user)
-                  .order_by('-discussion__created_at'))
+                  .filter(user=self.request.user))
+
+        qs = qs.exclude(status=self.model.STATUS.deleted).order_by('-discussion__created_at').select_related('discussion')
 
         return qs
 
@@ -67,7 +67,7 @@ class DiscussionDetailView(DetailView, FormMixin):
                                               read_at__isnull=True)
 
         now = datetime.now()
-        recipients.update(read_at=now)
+        recipients.update(read_at=now, status=Recipient.STATUS.read)
 
         return dict(data, **{
             'recipients': recipients,
@@ -279,7 +279,7 @@ class FolderUpdateView(UpdateView):
 class FolderDetailView(ListView):
     model = Folder
     template_name = 'discussions/folder/detail.html'
-    context_object_name = 'discussion_list'
+    context_object_name = 'recipient_list'
     context_object = 'folder'
     paginate_by = settings.PAGINATE_BY
 
@@ -300,5 +300,6 @@ class FolderDetailView(ListView):
 
     def get_queryset(self):
         return (self.get_object()
-                .discussions
-                .order_by('-created_at'))
+                .recipients
+                .order_by('-discussion__created_at')
+                .select_related('discussion'))
