@@ -124,7 +124,7 @@ class RecipientManager(models.Manager):
             An integer with the amount of unread messages.
 
         """
-        unread_total = self.filter(message__sender=from_user,
+        unread_total = self.filter(discussion__sender=from_user,
                                    user=to_user,
                                    status=self.model.STATUS.unread).count()
 

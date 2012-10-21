@@ -1,10 +1,29 @@
 from django import template
 
-from discussions.models import Recipient
+from discussions.models import Recipient, Folder
 
 import re
 
 register = template.Library()
+
+
+class Folders(template.Node):
+    def __init__(self, user, var_name):
+        self.user = template.Variable(user)
+        self.var_name = var_name
+
+    def render(self, context):
+        try:
+            user = self.user.resolve(context)
+        except template.VariableDoesNotExist:
+            return ''
+
+        folders = Folder.objects.filter(user=user)
+
+        if self.var_name:
+            context[self.var_name] = folders
+
+        return ''
 
 
 class MessageCount(template.Node):
@@ -37,6 +56,31 @@ class MessageCount(template.Node):
         context[self.var_name] = message_count
 
         return ''
+
+
+@register.tag
+def get_folders_for(parser, token):
+    """
+    Returns the folders for a user
+
+    Syntax::
+
+        {% get_folders_for [user] as [var_name] %}
+
+    Example usage::
+
+        {% get_folders_for pero as folders %}
+
+    """
+    try:
+        tag_name, arg = token.contents.split(None, 1)
+    except ValueError:
+        raise template.TemplateSyntaxError, "%s tag requires arguments" % token.contents.split()[0]
+    m = re.search(r'(.*?) as (\w+)', arg)
+    if not m:
+        raise template.TemplateSyntaxError, "%s tag had invalid arguments" % tag_name
+    user, var_name = m.groups()
+    return Folders(user, var_name)
 
 
 @register.tag
