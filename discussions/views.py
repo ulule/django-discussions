@@ -252,7 +252,11 @@ def discussion_remove(request, undo=False):
 
             if recipients:
                 for recipient in recipients:
-                    recipient.mark_as_deleted()
+                    if undo:
+                        recipient.mark_as_read()
+                    else:
+                        recipient.mark_as_deleted()
+
                 changed_message_list.add(discussion.pk)
 
         # Send messages

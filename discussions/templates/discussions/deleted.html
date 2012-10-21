@@ -1,5 +1,15 @@
 {% extends "discussions/list.html" %}
 {% load i18n %}
+{% load url from future %}
 
 {% block content_title %}<h2>{% trans "Trash" %}</h2>{% endblock %}
 
+{% block actions %}
+    {% if recipient_list %}
+        <ul id="action-list">
+            <input type="submit" value="{% trans "Unremove" %}" />
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block form_action_url %}{% url "discussions_unremove" %}{% endblock %}

@@ -6,7 +6,7 @@
 
 {% block content %}
     {{ block.super }}
-    <form method="post" action="{% url "discussions_remove" %}">
+    <form method="post" action="{% block form_action_url %}{% url "discussions_remove" %}{% endblock %}">
         {% csrf_token %}
         <ul id="discussion-list">
             {% for recipient in recipient_list %}
@@ -16,10 +16,12 @@
             {% endfor %}
         </ul>
 
-        {% if recipient_list %}
-            <ul id="action-list">
-                <input type="submit" value="{% trans "Remove" %}" />
-            </ul>
-        {% endif %}
+        {% block actions %}
+            {% if recipient_list %}
+                <ul id="action-list">
+                    <input type="submit" value="{% trans "Remove" %}" />
+                </ul>
+            {% endif %}
+        {% endblock %}
     </form>
 {% endblock %}
