@@ -15,11 +15,11 @@ urlpatterns = patterns(
         name='discussions_detail'),
 
     url(r'^remove/$',
-        login_required(views.discussion_remove),
+        login_required(views.DiscussionRemoveView.as_view()),
         name='discussions_remove'),
 
     url(r'^unremove/$',
-        login_required(views.discussion_remove),
+        login_required(views.DiscussionRemoveView.as_view()),
         {'undo': True},
         name='discussions_unremove'),
 

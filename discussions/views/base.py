@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from django.views.generic import DetailView, FormView, ListView
+from django.views.generic.base import View
 from django.views.generic.edit import FormMixin, CreateView, UpdateView
-from django.views.decorators.http import require_http_methods
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.models import User
@@ -197,85 +197,88 @@ class MessageComposeView(FormView):
         return self.get(request, *args, **kwargs)
 
 
-@require_http_methods(['POST'])
-def discussion_remove(request, undo=False):
-    """
-    A ``POST`` to remove messages.
+class DiscussionRemoveView(View):
+    http_method_names = ['post']
 
-    :param undo:
-        A Boolean that if ``True`` unremoves messages.
+    def post(self, *args, **kwargs):
+        """
+        A ``POST`` to remove messages.
 
-    POST can have the following keys:
+        :param undo:
+            A Boolean that if ``True`` unremoves messages.
 
-        ``message_pks``
-            List of message id's that should be deleted.
+        POST can have the following keys:
 
-        ``next``
-            String containing the URI which to redirect to after the keys are
-            removed. Redirect defaults to the inbox view.
+            ``message_pks``
+                List of message id's that should be deleted.
 
-    The ``next`` value can also be supplied in the URI with ``?next=<value>``.
+            ``next``
+                String containing the URI which to redirect to after the keys are
+                removed. Redirect defaults to the inbox view.
 
-    """
-    discussion_ids = request.POST.getlist('discussion_ids')
-    redirect_to = request.REQUEST.get('next', False)
+        The ``next`` value can also be supplied in the URI with ``?next=<value>``.
 
-    if discussion_ids:
-        # Check that all values are integers.
-        valid_discussion_id_list = set()
-        for pk in discussion_ids:
-            try:
-                valid_pk = int(pk)
-            except (TypeError, ValueError):
-                pass
-            else:
-                valid_discussion_id_list.add(valid_pk)
+        """
+        discussion_ids = self.request.POST.getlist('discussion_ids')
+        redirect_to = self.request.REQUEST.get('next', False)
+        undo = self.kwargs.get('undo', False)
 
-        # Delete all the messages, if they belong to the user.
-        now = datetime.now()
-        changed_message_list = set()
-        for pk in valid_discussion_id_list:
-            discussion = get_object_or_404(Discussion, pk=pk)
-
-            # Check if the user is the owner
-            if discussion.sender == request.user:
-                if undo:
-                    discussion.sender_deleted_at = None
+        if discussion_ids:
+            # Check that all values are integers.
+            valid_discussion_id_list = set()
+            for pk in discussion_ids:
+                try:
+                    valid_pk = int(pk)
+                except (TypeError, ValueError):
+                    pass
                 else:
-                    discussion.sender_deleted_at = now
-                discussion.save()
-                changed_message_list.add(discussion.pk)
+                    valid_discussion_id_list.add(valid_pk)
 
-            # Check if the user is a recipient of the message
-            recipients = discussion.recipient_set.filter(user=request.user,
-                                                         discussion=discussion)
+            # Delete all the messages, if they belong to the user.
+            now = datetime.now()
+            changed_message_list = set()
+            for pk in valid_discussion_id_list:
+                discussion = get_object_or_404(Discussion, pk=pk)
 
-            if recipients:
-                for recipient in recipients:
+                # Check if the user is the owner
+                if discussion.sender == self.request.user:
                     if undo:
-                        recipient.mark_as_read()
+                        discussion.sender_deleted_at = None
                     else:
-                        recipient.mark_as_deleted()
+                        discussion.sender_deleted_at = now
+                    discussion.save()
+                    changed_message_list.add(discussion.pk)
 
-                changed_message_list.add(discussion.pk)
+                # Check if the user is a recipient of the message
+                recipients = discussion.recipient_set.filter(user=self.request.user,
+                                                             discussion=discussion)
 
-        # Send messages
-        if (len(changed_message_list) > 0):
-            if undo:
-                message = ungettext('Discussion is succesfully restored.',
-                                    'Discussions are succesfully restored.',
-                                    len(changed_message_list))
-            else:
-                message = ungettext('Discussion is successfully removed.',
-                                    'Discussions are successfully removed.',
-                                    len(changed_message_list))
+                if recipients:
+                    for recipient in recipients:
+                        if undo:
+                            recipient.mark_as_read()
+                        else:
+                            recipient.mark_as_deleted()
 
-            messages.success(request, message, fail_silently=True)
+                    changed_message_list.add(discussion.pk)
 
-    if redirect_to:
-        return redirect(redirect_to)
+            # Send messages
+            if (len(changed_message_list) > 0):
+                if undo:
+                    message = ungettext('Discussion is succesfully restored.',
+                                        'Discussions are succesfully restored.',
+                                        len(changed_message_list))
+                else:
+                    message = ungettext('Discussion is successfully removed.',
+                                        'Discussions are successfully removed.',
+                                        len(changed_message_list))
 
-    return redirect(reverse('discussions_list'))
+                messages.success(self.request, message, fail_silently=True)
+
+        if redirect_to:
+            return redirect(redirect_to)
+
+        return redirect(reverse('discussions_list'))
 
 
 class FolderCreateView(CreateView):
