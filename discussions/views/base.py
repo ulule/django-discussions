@@ -198,7 +198,21 @@ class MessageComposeView(FormView):
         return self.get(request, *args, **kwargs)
 
 
-class DiscussionMoveView(DetailView):
+class DiscussionBulkMixin(object):
+    def valid_ids(self, ids):
+        valid_discussion_id_list = set()
+        for pk in ids:
+            try:
+                valid_pk = int(pk)
+            except (TypeError, ValueError):
+                pass
+            else:
+                valid_discussion_id_list.add(valid_pk)
+
+        return valid_discussion_id_list
+
+
+class DiscussionMoveView(DetailView, DiscussionBulkMixin):
     http_method_names = ['post']
     model = Folder
     pk_url_kwarg = 'folder_id'
@@ -222,23 +236,13 @@ class DiscussionMoveView(DetailView):
         discussion_ids = self.request.POST.getlist('discussion_ids')
 
         if discussion_ids:
-            # Check that all values are integers.
-            valid_discussion_id_list = set()
-            for pk in discussion_ids:
-                try:
-                    valid_pk = int(pk)
-                except (TypeError, ValueError):
-                    pass
-                else:
-                    valid_discussion_id_list.add(valid_pk)
-
-            Recipient.objects.filter(discussion__in=valid_discussion_id_list,
+            Recipient.objects.filter(discussion__in=self.valid_ids(discussion_ids),
                                      user=self.request.user).update(folder=self.object)
 
         return redirect(reverse('discussions_list'))
 
 
-class DiscussionRemoveView(View):
+class DiscussionRemoveView(View, DiscussionBulkMixin):
     http_method_names = ['post']
 
     def post(self, *args, **kwargs):
@@ -265,20 +269,10 @@ class DiscussionRemoveView(View):
         undo = self.kwargs.get('undo', False)
 
         if discussion_ids:
-            # Check that all values are integers.
-            valid_discussion_id_list = set()
-            for pk in discussion_ids:
-                try:
-                    valid_pk = int(pk)
-                except (TypeError, ValueError):
-                    pass
-                else:
-                    valid_discussion_id_list.add(valid_pk)
-
             # Delete all the messages, if they belong to the user.
             now = datetime.now()
             changed_message_list = set()
-            for pk in valid_discussion_id_list:
+            for pk in self.valid_ids(discussion_ids):
                 discussion = get_object_or_404(Discussion, pk=pk)
 
                 # Check if the user is the owner

@@ -68,6 +68,8 @@ class DiscussionManager(models.Manager):
 
         :param message:
             String containing the message.
+        :return:
+            A Discussion :class:`Discussion`
 
         """
         discussion = self.model(sender=sender,
