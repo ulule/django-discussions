@@ -4,6 +4,7 @@
 {% block content_title %}<h2>{% trans "Compose" %}</h2>{% endblock %}
 
 {% block content %}
+    {{ block.super }}
     <form action="" method="post" id="compose-form">
         {% csrf_token %}
         <fieldset>

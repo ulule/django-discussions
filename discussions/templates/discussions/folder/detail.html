@@ -6,6 +6,8 @@
 {% block content_title %}<h2>{% blocktrans with name=folder.name %}Folder "{{ name }}"{% endblocktrans %}</h2>{% endblock %}
 
 {% block content %}
+    {{ block.super }}
+
     <a href="{% url "discussions_folder_create" %}">{% trans "Create a new folder" %}</a>
 
     <ul>

@@ -4,6 +4,8 @@
 {% block content_title %}<h2>{% blocktrans with name=folder.name %}Update folder "{{ name }}"{% endblocktrans %}</h2>{% endblock %}
 
 {% block content %}
+    {{ block.super }}
+
     <form action="" method="post" id="update-folder-form">
         {% csrf_token %}
         <fieldset>

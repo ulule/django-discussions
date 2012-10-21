@@ -4,6 +4,8 @@
 {% block content_title %}<h2>{% trans "Create a folder" %}</h2>{% endblock %}
 
 {% block content %}
+    {{ block.super }}
+
     <form action="" method="post" id="create-folder-form">
         {% csrf_token %}
         <fieldset>
