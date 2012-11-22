@@ -117,6 +117,8 @@ class DiscussionDetailView(DetailView, FormMixin):
         return [self.template_name]
 
     def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
         form_class = self.get_form_class()
         form = self.get_form(form_class)
 
@@ -126,8 +128,6 @@ class DiscussionDetailView(DetailView, FormMixin):
         return self.form_invalid(form)
 
     def form_valid(self, form):
-        self.object = self.get_object()
-
         form.save(self.request.user)
 
         return super(DiscussionDetailView, self).form_valid(form)
