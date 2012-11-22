@@ -22,11 +22,11 @@ class Contact(models.Model):
     """
     from_user = models.ForeignKey(User,
                                   verbose_name=_('from user'),
-                                  related_name=('from_users'))
+                                  related_name=('from_contact_users'))
 
     to_user = models.ForeignKey(User,
                                 verbose_name=_('to user'),
-                                related_name=('to_users'))
+                                related_name=('to_contact_users'))
 
     latest_discussion = models.ForeignKey('Discussion',
                                           verbose_name=_("latest discussion"))
