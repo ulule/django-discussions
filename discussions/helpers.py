@@ -2,10 +2,8 @@ from django.contrib.auth.models import SiteProfileNotAvailable, User
 
 from collections import defaultdict
 
-from dbutils.helpers import queryset_to_dict
-
 from discussions.models import Discussion
-from discussions.utils import get_profile_model
+from discussions.utils import get_profile_model, queryset_to_dict
 
 
 def lookup_discussions(recipients):
