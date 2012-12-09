@@ -49,7 +49,7 @@ urlpatterns = patterns(
         pre_filter(views.FolderDetailView.as_view()),
         name='discussions_folder_detail'),
 
-    url(r'^folder/update/(?P<folder_id>[\d]+)$',
+    url(r'^folder/(?P<folder_id>[\d]+)/update$',
         pre_filter(views.FolderUpdateView.as_view()),
         name='discussions_folder_update'),
 

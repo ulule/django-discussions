@@ -1,4 +1,4 @@
-from django.contrib.auth.models import SiteProfileNotAvailable
+from django.contrib.auth.models import SiteProfileNotAvailable, User
 
 from collections import defaultdict
 
@@ -30,8 +30,11 @@ def lookup_profiles(recipients):
         Profile = get_profile_model()
 
         for recipient in recipients:
-            user_ids[recipient.user_id].append(recipient.user)
-            user_ids[recipient.discussion.sender_id].append(recipient.discussion.sender)
+            try:
+                user_ids[recipient.user_id].append(recipient.user)
+                user_ids[recipient.discussion.sender_id].append(recipient.discussion.sender)
+            except User.DoesNotExist:
+                pass
 
             for user in recipient.discussion.recipients.all():
                 user_ids[user.pk].append(user)

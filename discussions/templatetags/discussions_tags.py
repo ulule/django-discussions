@@ -77,6 +77,7 @@ def get_folders_for(parser, token):
     except ValueError:
         raise template.TemplateSyntaxError, "%s tag requires arguments" % token.contents.split()[0]
     m = re.search(r'(.*?) as (\w+)', arg)
+
     if not m:
         raise template.TemplateSyntaxError, "%s tag had invalid arguments" % tag_name
     user, var_name = m.groups()

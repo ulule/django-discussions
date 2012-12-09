@@ -393,7 +393,7 @@ class FolderUpdateView(UpdateView):
         })
 
 
-class FolderDetailView(ListView):
+class FolderDetailView(DiscussionListView):
     model = Folder
     template_name = 'discussions/folder/detail.html'
     context_object_name = 'recipient_list'
@@ -419,4 +419,4 @@ class FolderDetailView(ListView):
         return (self.get_object()
                 .recipients
                 .order_by('-discussion__created_at')
-                .select_related('discussion'))
+                .select_related('user'))
