@@ -52,3 +52,11 @@ FOLDER_UPDATE_VIEW = getattr(settings,
 FOLDER_DETAIL_VIEW = getattr(settings,
                              'DISCUSSIONS_FOLDER_DETAIL_VIEW',
                              'discussions.views.base.FolderDetailView')
+
+COMPOSE_FORM = getattr(settings, 'DISCUSSIONS_COMPOSE_FORM', 'discussions.forms.base.ComposeForm')
+
+REPLY_FORM = getattr(settings, 'DISCUSSIONS_REPLY_FORM', 'discussions.forms.base.ReplyForm')
+
+FOLDER_FORM = getattr(settings, 'DISCUSSIONS_FOLDER_FORM', 'discussions.forms.base.FolderForm')
+
+PRE_FILTER = getattr(settings, 'DISCUSSIONS_PRE_FILTER', 'django.contrib.auth.decorators.login_required')
