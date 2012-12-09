@@ -15,7 +15,7 @@ from django.http import Http404
 from discussions.models import Discussion, Folder, Recipient
 from discussions.forms import ComposeForm, ReplyForm, FolderForm
 
-from discussions.helpers import lookup_discussions
+from discussions.helpers import lookup_discussions, lookup_profiles
 from discussions import settings
 
 from pure_pagination import Paginator
@@ -45,7 +45,8 @@ class DiscussionListView(ListView):
 
         qs = (qs.exclude(status=self.model.STATUS.deleted)
               .exclude(folder__isnull=False)
-              .order_by('-discussion__created_at'))
+              .order_by('-discussion__created_at')
+              .select_related('user'))
 
         return qs
 
@@ -53,6 +54,7 @@ class DiscussionListView(ListView):
         context = super(DiscussionListView, self).get_context_data(**kwargs)
 
         lookup_discussions(context[self.context_object_name])
+        lookup_profiles(context[self.context_object_name])
 
         return context
 
@@ -67,7 +69,8 @@ class DiscussionSentView(DiscussionListView):
               .filter(discussion__sender=user, user=user))
 
         qs = (qs.exclude(status=self.model.STATUS.deleted)
-              .order_by('-discussion__created_at'))
+              .order_by('-discussion__created_at')
+              .select_related('user'))
 
         return qs
 
@@ -82,7 +85,8 @@ class DiscussionDeletedView(DiscussionListView):
               .filter(user=user))
 
         qs = (qs.filter(status=self.model.STATUS.deleted)
-              .order_by('-discussion__created_at'))
+              .order_by('-discussion__created_at')
+              .select_related('user'))
 
         return qs
 

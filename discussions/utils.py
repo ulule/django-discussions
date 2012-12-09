@@ -1,6 +1,9 @@
 #-*- coding: utf-8 -*-
 from django.core import exceptions
+from django.conf import settings
 from django.utils.importlib import import_module
+from django.db.models import get_model
+from django.contrib.auth.models import SiteProfileNotAvailable
 
 
 CLASS_PATH_ERROR = 'django-discussions is unable to interpret settings value for %s. '\
@@ -60,3 +63,20 @@ def load_class(class_path, setting_name=None):
                 class_module, class_name)
         raise exceptions.ImproperlyConfigured(txt)
     return clazz
+
+
+def get_profile_model():
+    """
+    Return the model class for the currently-active user profile
+    model, as defined by the ``AUTH_PROFILE_MODULE`` setting.
+
+    :return: The model that is used as profile.
+
+    """
+    if (not hasattr(settings, 'AUTH_PROFILE_MODULE')) or (not settings.AUTH_PROFILE_MODULE):
+        raise SiteProfileNotAvailable
+
+    profile_mod = get_model(*settings.AUTH_PROFILE_MODULE.split('.'))
+    if profile_mod is None:
+        raise SiteProfileNotAvailable
+    return profile_mod
