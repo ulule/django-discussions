@@ -16,7 +16,7 @@ setup(
     long_description=README,
     author='Florent Messa',
     author_email='florent.messa@gmail.com',
-    url='http://github.com/sem-io/django-discussions',
+    url='http://github.com/thoas/django-discussions',
     packages=find_packages(),
     zip_safe=False,
     include_package_data=True,
