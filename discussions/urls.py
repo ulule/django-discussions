@@ -8,7 +8,7 @@ pre_filter = load_class(settings.PRE_FILTER)
 
 urlpatterns = patterns(
     '',
-    url(r'^compose(?:\/(?P<recipients>[\+\.\w]+))?/$',
+    url(r'^compose(?:\/(?P<recipients>[\w\-\_\+]+))?/$',
         pre_filter(views.MessageComposeView.as_view()),
         name='discussions_compose'),
 
@@ -25,7 +25,7 @@ urlpatterns = patterns(
         {'undo': True},
         name='discussions_unremove'),
 
-    url(r'^(?:(?P<username>[\.\w]+))?$',
+    url(r'^(?:(?P<username>[\w\-\_]+))?$',
         pre_filter(views.DiscussionListView.as_view()),
         name='discussions_list'),
 

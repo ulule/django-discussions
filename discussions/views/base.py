@@ -14,7 +14,11 @@ from django.http import Http404
 
 from discussions.models import Discussion, Folder, Recipient
 from discussions.forms import ComposeForm, ReplyForm, FolderForm
+
+from discussions.helpers import lookup_discussions
 from discussions import settings
+
+from pure_pagination import Paginator
 
 
 class DiscussionListView(ListView):
@@ -22,26 +26,35 @@ class DiscussionListView(ListView):
     paginate_by = settings.PAGINATE_BY
     model = Recipient
     context_object_name = 'recipient_list'
+    paginator_class = Paginator
 
     def get_queryset(self):
+        self.user = None
+
         if self.kwargs.get('username'):
             username = self.kwargs.get('username')
 
-            user = get_object_or_404(User, username=username)
+            self.user = get_object_or_404(User, username=username)
 
             qs = (self.model.objects
-                  .filter(models.Q(user=self.request.user, discussion__sender=user) |
-                          models.Q(user=user, discussion__sender=self.request.user)))
+                  .filter(models.Q(user=self.request.user, discussion__sender=self.user) |
+                          models.Q(user=self.user, discussion__sender=self.request.user)))
         else:
             qs = (self.model.objects
                   .filter(user=self.request.user))
 
         qs = (qs.exclude(status=self.model.STATUS.deleted)
               .exclude(folder__isnull=False)
-              .order_by('-discussion__created_at')
-              .select_related('discussion'))
+              .order_by('-discussion__created_at'))
 
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super(DiscussionListView, self).get_context_data(**kwargs)
+
+        lookup_discussions(context[self.context_object_name])
+
+        return context
 
 
 class DiscussionSentView(DiscussionListView):
@@ -54,8 +67,7 @@ class DiscussionSentView(DiscussionListView):
               .filter(discussion__sender=user, user=user))
 
         qs = (qs.exclude(status=self.model.STATUS.deleted)
-              .order_by('-discussion__created_at')
-              .select_related('discussion'))
+              .order_by('-discussion__created_at'))
 
         return qs
 
@@ -70,8 +82,7 @@ class DiscussionDeletedView(DiscussionListView):
               .filter(user=user))
 
         qs = (qs.filter(status=self.model.STATUS.deleted)
-              .order_by('-discussion__created_at')
-              .select_related('discussion'))
+              .order_by('-discussion__created_at'))
 
         return qs
 
@@ -84,9 +95,7 @@ class DiscussionDetailView(DetailView, FormMixin):
     form_class = ReplyForm
 
     def get_success_url(self):
-        return reverse('discussions_detail', kwargs={
-            'discussion_id': self.object.pk
-        })
+        return self.object.get_absolute_url()
 
     def is_allowed(self, user):
         return self.object.can_view(user)
@@ -104,14 +113,17 @@ class DiscussionDetailView(DetailView, FormMixin):
         now = datetime.now()
         recipients.update(read_at=now, status=Recipient.STATUS.read)
 
+        users = self.object.recipients.select_related('user')
+
         return dict(data, **{
             'recipients': recipients,
+            'users': users,
             'form': self.get_form(self.get_form_class()),
             'message_list': self.get_messages(self.object)
         })
 
     def get_messages(self, discussion):
-        return discussion.messages.all()
+        return discussion.messages.order_by('sent_at')
 
     def get_template_names(self):
         return [self.template_name]

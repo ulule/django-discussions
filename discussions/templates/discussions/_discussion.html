@@ -6,7 +6,7 @@
     </div>
     <div class="discussion-information">
         <h2><a href="{% url discussions_detail discussion.pk %}">{{ discussion.subject }}</a></h2>
-        
+
         {% if discussion.latest_message %}
             {% with message=discussion.latest_message %}
                 <p>{{ message.body }}</p>
