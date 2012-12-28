@@ -111,8 +111,7 @@ class DiscussionDetailView(DetailView, FormMixin):
             raise Http404
 
         recipients = Recipient.objects.filter(discussion=self.object,
-                                              user=self.request.user,
-                                              read_at__isnull=True)
+                                              user=self.request.user)
 
         now = datetime.now()
         recipients.update(read_at=now, status=Recipient.STATUS.read)

@@ -214,6 +214,8 @@ class Discussion(models.Model):
                     discussion=self)
         m.save()
 
+        self.recipient_set.exclude(user=sender).update(status=Recipient.STATUS.unread)
+
         return m
 
     def get_absolute_url(self):
