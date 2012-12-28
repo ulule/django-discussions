@@ -317,7 +317,7 @@ class DiscussionRemoveView(View, DiscussionBulkMixin):
                 discussion = get_object_or_404(Discussion, pk=pk)
 
                 # Check if the user is the owner
-                if discussion.sender == self.request.user:
+                if discussion.sender_id == self.request.user.pk:
                     if undo:
                         discussion.sender_deleted_at = None
                     else:
