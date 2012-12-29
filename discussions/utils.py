@@ -7,6 +7,14 @@ from django.utils.importlib import import_module
 from django.db.models import get_model
 from django.contrib.auth.models import SiteProfileNotAvailable
 
+try:
+    from django.utils.timezone import timedelta
+    from django.utils.timezone import now as tznow
+except ImportError:
+    import datetime
+    from datetime import timedelta  # NOQA
+    tznow = datetime.datetime.now  # NOQA
+
 
 CLASS_PATH_ERROR = 'django-discussions is unable to interpret settings value for %s. '\
                    '%s should be in the form of a tupple: '\

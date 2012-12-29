@@ -9,6 +9,8 @@ from django.utils.text import truncate_words
 from discussions.managers import (DiscussionManager, ContactManager,
                                   RecipientManager, MessageManager)
 
+from discussions.utils import tznow
+
 from model_utils import Choices
 
 
@@ -146,6 +148,9 @@ class Discussion(models.Model):
     created_at = models.DateTimeField(_('created at'),
                                       auto_now_add=True)
 
+    updated_at = models.DateTimeField(_('updated at'),
+                                      null=True, blank=True)
+
     sender_deleted_at = models.DateTimeField(_("sender deleted at"),
                                              null=True,
                                              blank=True)
@@ -205,7 +210,7 @@ class Discussion(models.Model):
             updated = True
         return updated
 
-    def add_message(self, body, sender=None):
+    def add_message(self, body, sender=None, commit=True):
         if not sender:
             sender = self.sender
 
@@ -215,6 +220,11 @@ class Discussion(models.Model):
         m.save()
 
         self.recipient_set.exclude(user=sender).update(status=Recipient.STATUS.unread)
+
+        self.updated_at = tznow()
+
+        if commit:
+            self.save()
 
         return m
 
