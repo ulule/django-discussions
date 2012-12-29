@@ -45,7 +45,7 @@ class DiscussionListView(ListView):
 
         qs = (qs.exclude(status=self.model.STATUS.deleted)
               .exclude(folder__isnull=False)
-              .order_by('-discussion__created_at')
+              .order_by('-discussion__updated_at', '-discussion__created_at')
               .select_related('user'))
 
         return qs
