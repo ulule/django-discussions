@@ -45,7 +45,7 @@ class DiscussionListView(ListView):
 
         qs = (qs.exclude(status=self.model.STATUS.deleted)
               .exclude(folder__isnull=False)
-              .order_by('-discussion__created_at')
+              .order_by('-discussion__updated_at', '-discussion__created_at')
               .select_related('user'))
 
         return qs
@@ -111,8 +111,7 @@ class DiscussionDetailView(DetailView, FormMixin):
             raise Http404
 
         recipients = Recipient.objects.filter(discussion=self.object,
-                                              user=self.request.user,
-                                              read_at__isnull=True)
+                                              user=self.request.user)
 
         now = datetime.now()
         recipients.update(read_at=now, status=Recipient.STATUS.read)
@@ -317,7 +316,7 @@ class DiscussionRemoveView(View, DiscussionBulkMixin):
                 discussion = get_object_or_404(Discussion, pk=pk)
 
                 # Check if the user is the owner
-                if discussion.sender == self.request.user:
+                if discussion.sender_id == self.request.user.pk:
                     if undo:
                         discussion.sender_deleted_at = None
                     else:
