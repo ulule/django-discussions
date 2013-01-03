@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{% load url from future %}
+
+
 {% load i18n %}
 
 {% block title %}{% trans "Log in" %}{% endblock %}
@@ -9,7 +12,7 @@
 
     <p>
         {% trans "Please log in using the form below." %}
-        {% url registration_register as register_url %}
+        {% url 'registration_register' as register_url %}
         {% blocktrans %}If you don't have an account yet, feel free to <a href="{{ register_url }}">create one</a>.{% endblocktrans %}
     </p>
 
@@ -27,7 +30,7 @@
         </p>
 
         <div>
-            {% url auth_password_reset as auth_password_reset_url %}
+            {% url 'auth_password_reset' as auth_password_reset_url %}
             {% blocktrans with auth_password_reset_url as password_reset_url %}
                 Lost your password? <a href="{{ password_reset_url }}" title="recover it">recover it!</a>
             {% endblocktrans %}

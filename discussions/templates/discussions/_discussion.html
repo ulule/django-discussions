@@ -1,3 +1,4 @@
+{% load url from future %}
 {% load i18n %}
 
 <div class="discussion-detail">
@@ -5,7 +6,7 @@
         <input type="checkbox" name="discussion_ids" value="{{ discussion.pk }}" class="read">
     </div>
     <div class="discussion-information">
-        <h2><a href="{% url discussions_detail discussion.pk %}">{{ discussion.subject }}</a></h2>
+        <h2><a href="{% url 'discussions_detail' discussion.pk %}">{{ discussion.subject }}</a></h2>
 
         {% if discussion.latest_message %}
             {% with message=discussion.latest_message %}
@@ -18,7 +19,7 @@
             {% for recipient in discussion.recipients.all %}
                 <ul>
                     {% if recipient != user %}
-                        <li><a href="{% url discussions_list recipient.username %}">{{ recipient }}</a></li>
+                        <li><a href="{% url 'discussions_list' recipient.username %}">{{ recipient }}</a></li>
                     {% endif %}
                 </ul>
             {% endfor %}
