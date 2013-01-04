@@ -76,11 +76,12 @@ class DiscussionManager(models.Manager):
                                 subject=subject)
         discussion.save()
 
-        discussion.add_message(body)
+        discussion.save_recipients(list(to_user_list) + [sender, ])
 
         # Save the recipients
-        discussion.save_recipients(list(to_user_list) + [sender, ])
         discussion.update_contacts(to_user_list)
+
+        discussion.add_message(body)
 
         return discussion
 
