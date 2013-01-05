@@ -4,3 +4,4 @@
 local_settings.py
 .DS_Store
 project_example/database
+docs/_build/
