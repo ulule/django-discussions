@@ -82,9 +82,9 @@ class DiscussionUnreadView(DiscussionListView):
         user = self.request.user
 
         qs = (self.model.objects
-              .filter(discussion__sender=user, user=user))
+              .filter(user=user))
 
-        qs = (qs.exclude(status=self.model.STATUS.unread)
+        qs = (qs.filter(status=self.model.STATUS.unread)
               .order_by('-discussion__updated_at', '-discussion__created_at')
               .select_related('user'))
 
