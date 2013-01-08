@@ -179,6 +179,7 @@ class MessageComposeView(FormView):
 
     def get_initial(self):
         recipients = None
+        initial = {}
 
         if self.request.method == 'POST':
             recipients = self.request.POST.get('recipients', None)
@@ -191,9 +192,9 @@ class MessageComposeView(FormView):
 
             self.recipients = recipients
 
-            self.initial['to'] = recipients
+            initial['to'] = recipients
 
-        return self.initial
+        return initial.copy()
 
     def get_context_data(self, **kwargs):
         data = super(MessageComposeView, self).get_context_data(**kwargs)
