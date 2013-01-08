@@ -8,6 +8,8 @@ DiscussionSentView = load_class(settings.DISCUSSION_SENT_VIEW)
 
 DiscussionDeletedView = load_class(settings.DISCUSSION_DELETED_VIEW)
 
+DiscussionUnreadView = load_class(settings.DISCUSSION_UNREAD_VIEW)
+
 DiscussionDetailView = load_class(settings.DISCUSSION_DETAIL_VIEW)
 
 DiscussionRemoveView = load_class(settings.DISCUSSION_REMOVE_VIEW)

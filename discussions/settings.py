@@ -28,6 +28,9 @@ DISCUSSION_SENT_VIEW = getattr(settings,
 DISCUSSION_DELETED_VIEW = getattr(settings,
                                   'DISCUSSIONS_DISCUSSION_DELETED_VIEW',
                                   'discussions.views.base.DiscussionDeletedView')
+DISCUSSION_UNREAD_VIEW = getattr(settings,
+                                 'DISCUSSIONS_DISCUSSION_UNREAD_VIEW',
+                                 'discussions.views.base.DiscussionUnreadView')
 DISCUSSION_DETAIL_VIEW = getattr(settings,
                                  'DISCUSSIONS_DISCUSSION_DETAIL_VIEW',
                                  'discussions.views.base.DiscussionDetailView')

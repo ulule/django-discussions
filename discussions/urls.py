@@ -33,6 +33,10 @@ urlpatterns = patterns(
         pre_filter(views.DiscussionSentView.as_view()),
         name='discussions_sent'),
 
+    url(r'^unread/$',
+        pre_filter(views.DiscussionUnreadView.as_view()),
+        name='discussions_unread'),
+
     url(r'^trash/$',
         pre_filter(views.DiscussionDeletedView.as_view()),
         name='discussions_deleted'),

@@ -75,6 +75,22 @@ class DiscussionSentView(DiscussionListView):
         return qs
 
 
+class DiscussionUnreadView(DiscussionListView):
+    template_name = 'discussions/unread.html'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        qs = (self.model.objects
+              .filter(discussion__sender=user, user=user))
+
+        qs = (qs.exclude(status=self.model.STATUS.unread)
+              .order_by('-discussion__updated_at', '-discussion__created_at')
+              .select_related('user'))
+
+        return qs
+
+
 class DiscussionDeletedView(DiscussionListView):
     template_name = 'discussions/deleted.html'
 

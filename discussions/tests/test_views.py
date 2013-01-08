@@ -317,6 +317,16 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertTemplateUsed(response, 'discussions/deleted.html')
 
+    def test_discussion_unread(self):
+        """ ``GET`` the message list for a user """
+        self._test_login("discussions_unread")
+
+        self.client.login(username='thoas', password='$ecret')
+        response = self.client.get(reverse('discussions_unread'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, 'discussions/unread.html')
+
     def test_discussion_detail_between_two_users(self):
         """ ``GET`` to a detail page between two users """
         self._test_login('discussions_list',
