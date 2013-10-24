@@ -1,8 +1,10 @@
-from django.test import TestCase
-from django.contrib.auth.models import User
+from __future__ import unicode_literals
 
-from discussions.forms import ComposeForm, ReplyForm, FolderForm
-from discussions.models import Discussion
+from django.test import TestCase
+
+from ..forms import ComposeForm, ReplyForm, FolderForm
+from ..models import Discussion
+from ..compat import User
 
 
 class ComposeFormTests(TestCase):
@@ -22,7 +24,7 @@ class ComposeFormTests(TestCase):
             {'data': {'to': 'john',
                       'body': '',
                       'subject': ''},
-             'error': ('body', [u'This field is required.'])},
+             'error': ('body', ['This field is required.'])},
         ]
 
         for invalid_dict in invalid_data_dicts:

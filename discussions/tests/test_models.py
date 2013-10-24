@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.utils.text import truncate_words
-from django.contrib.auth.models import User
 
-from discussions.models import Message, Recipient, Contact
+from ..models import Message, Recipient, Contact
+from ..compat import User
 
 
 class MessageContactTests(TestCase):

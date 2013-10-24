@@ -1,6 +1,9 @@
+from __future__ import unicode_literals
+
 from django.test import TestCase
-from django.contrib.auth.models import User
 from django.template import Context, Template
+
+from ..compat import User
 
 
 class TemplateTagsTests(TestCase):
@@ -13,7 +16,7 @@ class TemplateTagsTests(TestCase):
         c = Context({
             'user': user
         })
-        self.failUnlessEqual(u'1', t.render(c))
+        self.failUnlessEqual('1', t.render(c))
 
     def test_get_unread_message_count_between(self):
         thoas = User.objects.get(pk=1)
@@ -24,7 +27,7 @@ class TemplateTagsTests(TestCase):
             'user_1': thoas,
             'user_2': ampelmann
         })
-        self.failUnlessEqual(u'0', t.render(c))
+        self.failUnlessEqual('0', t.render(c))
 
     def test_get_folders_for(self):
         user = User.objects.get(pk=1)
@@ -34,10 +37,10 @@ class TemplateTagsTests(TestCase):
             'user': user
         })
 
-        self.failUnlessEqual(u'My folder', t.render(c))
+        self.failUnlessEqual('My folder', t.render(c))
 
         c = Context({
             'user': User.objects.get(pk=2)
         })
 
-        self.failUnlessEqual(u'', t.render(c))  # return nothing
+        self.failUnlessEqual('', t.render(c))  # return nothing

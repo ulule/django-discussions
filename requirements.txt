@@ -1,8 +1,8 @@
-Django>=1.4.1,<=1.5
-django-nose==0.1.3
-coverage>=3.4
+Django>=1.5,<=1.6
+django-nose
+coverage
 tox
 flake8
 mock
-django-model-utils==1.1.0
-django-pure-pagination==0.2.1
+django-model-utils
+django-pure-pagination

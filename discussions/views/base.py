@@ -5,18 +5,17 @@ from django.views.generic.base import View
 from django.views.generic.edit import FormMixin, CreateView, UpdateView
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils.translation import ungettext
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.db import models
 from django.http import Http404
 
-from discussions.models import Discussion, Folder, Recipient
-from discussions.forms import ComposeForm, ReplyForm, FolderForm
-
-from discussions.helpers import lookup_discussions, lookup_profiles
-from discussions import settings
+from ..models import Discussion, Folder, Recipient
+from ..forms import ComposeForm, ReplyForm, FolderForm
+from ..helpers import lookup_discussions, lookup_profiles
+from .. import settings
+from ..compat import User
 
 from pure_pagination import Paginator
 

@@ -1,7 +1,8 @@
 from django import forms
 from django.forms import widgets
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+
+from .compat import User
 
 
 class CommaSeparatedUserInput(widgets.Input):

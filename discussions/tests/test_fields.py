@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django import forms
 
-from discussions.fields import CommaSeparatedUserField
+from ..fields import CommaSeparatedUserField
 
 
 class CommaSeparatedTestForm(forms.Form):

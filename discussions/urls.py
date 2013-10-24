@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 
-from discussions import views, settings
-from discussions.utils import load_class
+from . import views, settings
+from .utils import load_class
 
 pre_filter = load_class(settings.PRE_FILTER)
 

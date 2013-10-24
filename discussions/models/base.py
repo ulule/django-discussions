@@ -3,17 +3,19 @@ from datetime import datetime
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
 from django.utils.text import truncate_words
+from django.utils.encoding import python_2_unicode_compatible
 
 from discussions.managers import (DiscussionManager, ContactManager,
                                   RecipientManager, MessageManager)
 
-from discussions.utils import tznow
+from ..utils import tznow
+from ..compat import User
 
 from model_utils import Choices
 
 
+@python_2_unicode_compatible
 class Contact(models.Model):
     """
     Contact model.
@@ -42,7 +44,7 @@ class Contact(models.Model):
         verbose_name_plural = _('contacts')
         app_label = 'discussions'
 
-    def __unicode__(self):
+    def __str__(self):
         return (_('%(from_user)s and %(to_user)s')
                 % {'from_user': self.from_user.username,
                    'to_user': self.to_user.username})
@@ -132,6 +134,7 @@ class Recipient(models.Model):
             self.save()
 
 
+@python_2_unicode_compatible
 class Discussion(models.Model):
     """ Private message model, from user to user(s) """
     sender = models.ForeignKey(User,
@@ -170,7 +173,7 @@ class Discussion(models.Model):
         )
         app_label = 'discussions'
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Discussion opened by %s' % self.sender
 
     def save_recipients(self, to_user_list):
@@ -245,6 +248,7 @@ class Discussion(models.Model):
         return user.has_perm('discussions.can_view')
 
 
+@python_2_unicode_compatible
 class Message(models.Model):
     """ Private message model, from user to user(s) """
     sender = models.ForeignKey(User,
@@ -272,12 +276,13 @@ class Message(models.Model):
         verbose_name_plural = _('messages')
         app_label = 'discussions'
 
-    def __unicode__(self):
+    def __str__(self):
         """ Human representation, displaying first ten words of the body. """
         truncated_body = truncate_words(self.body, 10)
         return "%(truncated_body)s" % {'truncated_body': truncated_body}
 
 
+@python_2_unicode_compatible
 class Folder(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Name'))
 
@@ -292,7 +297,7 @@ class Folder(models.Model):
         verbose_name_plural = _('folders')
         app_label = 'discussions'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):

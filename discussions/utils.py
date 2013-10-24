@@ -5,7 +5,6 @@ from django.core import exceptions
 from django.conf import settings
 from django.utils.importlib import import_module
 from django.db.models import get_model
-from django.contrib.auth.models import SiteProfileNotAvailable
 
 try:
     from django.utils.timezone import timedelta
@@ -84,12 +83,9 @@ def get_profile_model():
 
     """
     if (not hasattr(settings, 'AUTH_PROFILE_MODULE')) or (not settings.AUTH_PROFILE_MODULE):
-        raise SiteProfileNotAvailable
+        return None
 
-    profile_mod = get_model(*settings.AUTH_PROFILE_MODULE.split('.'))
-    if profile_mod is None:
-        raise SiteProfileNotAvailable
-    return profile_mod
+    return get_model(*settings.AUTH_PROFILE_MODULE.split('.'))
 
 
 def queryset_to_dict(qs, key='pk', singular=True):

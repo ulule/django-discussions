@@ -1,6 +1,6 @@
 from django import template
 
-from discussions.models import Recipient, Folder
+from ..models import Recipient, Folder
 
 import re
 

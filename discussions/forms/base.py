@@ -1,8 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from discussions.fields import CommaSeparatedUserField
-from discussions.models import Discussion, Folder
+from ..fields import CommaSeparatedUserField
+from ..models import Discussion, Folder
 
 
 class ComposeForm(forms.Form):

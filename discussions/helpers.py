@@ -1,9 +1,8 @@
-from django.contrib.auth.models import SiteProfileNotAvailable, User
-
 from collections import defaultdict
 
-from discussions.models import Discussion
-from discussions.utils import get_profile_model, queryset_to_dict
+from .models import Discussion
+from .compat import User
+from .utils import get_profile_model, queryset_to_dict
 
 
 def lookup_discussions(recipients):
@@ -24,19 +23,19 @@ def lookup_discussions(recipients):
 def lookup_profiles(recipients):
     user_ids = defaultdict(list)
 
-    try:
-        Profile = get_profile_model()
+    for recipient in recipients:
+        try:
+            user_ids[recipient.user_id].append(recipient.user)
+            user_ids[recipient.discussion.sender_id].append(recipient.discussion.sender)
+        except User.DoesNotExist:
+            pass
 
-        for recipient in recipients:
-            try:
-                user_ids[recipient.user_id].append(recipient.user)
-                user_ids[recipient.discussion.sender_id].append(recipient.discussion.sender)
-            except User.DoesNotExist:
-                pass
+        for user in recipient.discussion.recipients.all():
+            user_ids[user.pk].append(user)
 
-            for user in recipient.discussion.recipients.all():
-                user_ids[user.pk].append(user)
+    Profile = get_profile_model()
 
+    if Profile:
         profiles = queryset_to_dict(Profile.objects.filter(user__in=user_ids), key='user_id')
 
         for user_id, profile in profiles.iteritems():
@@ -44,7 +43,5 @@ def lookup_profiles(recipients):
                 for user in user_ids[user_id]:
                     profile.user = user
                     user._profile_cache = profile
-    except SiteProfileNotAvailable:
-        pass
 
     return recipients

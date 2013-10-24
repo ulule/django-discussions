@@ -1,9 +1,9 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
 
-from discussions.forms import ComposeForm, FolderForm
-from discussions.models import Message, Recipient, Discussion, Folder
+from ..forms import ComposeForm, FolderForm
+from ..models import Message, Recipient, Discussion, Folder
+from ..compat import User
 
 
 class DiscussionsViewsTests(TestCase):
