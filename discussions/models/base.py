@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.db import models
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import truncate_words
@@ -10,9 +11,11 @@ from discussions.managers import (DiscussionManager, ContactManager,
                                   RecipientManager, MessageManager)
 
 from ..utils import tznow
-from ..compat import User
 
 from model_utils import Choices
+
+
+AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 
 @python_2_unicode_compatible
@@ -24,11 +27,11 @@ class Contact(models.Model):
     received a message from.
 
     """
-    from_user = models.ForeignKey(User,
+    from_user = models.ForeignKey(AUTH_USER_MODEL,
                                   verbose_name=_('from user'),
                                   related_name=('from_contact_users'))
 
-    to_user = models.ForeignKey(User,
+    to_user = models.ForeignKey(AUTH_USER_MODEL,
                                 verbose_name=_('to user'),
                                 related_name=('to_contact_users'))
 
@@ -76,7 +79,7 @@ class Recipient(models.Model):
                      (1, 'unread', _('unread')),
                      (2, 'deleted', _('deleted')))
 
-    user = models.ForeignKey(User,
+    user = models.ForeignKey(AUTH_USER_MODEL,
                              verbose_name=_('recipient'))
 
     discussion = models.ForeignKey('Discussion',
@@ -137,11 +140,11 @@ class Recipient(models.Model):
 @python_2_unicode_compatible
 class Discussion(models.Model):
     """ Private message model, from user to user(s) """
-    sender = models.ForeignKey(User,
+    sender = models.ForeignKey(AUTH_USER_MODEL,
                                related_name='sent_discussions',
                                verbose_name=_('sender'))
 
-    recipients = models.ManyToManyField(User,
+    recipients = models.ManyToManyField(AUTH_USER_MODEL,
                                         through='Recipient',
                                         related_name='received_discussions',
                                         verbose_name=_('recipients'))
@@ -251,7 +254,7 @@ class Discussion(models.Model):
 @python_2_unicode_compatible
 class Message(models.Model):
     """ Private message model, from user to user(s) """
-    sender = models.ForeignKey(User,
+    sender = models.ForeignKey(AUTH_USER_MODEL,
                                related_name='sent_messages',
                                verbose_name=_('sender'))
 
@@ -289,7 +292,7 @@ class Folder(models.Model):
     created_at = models.DateTimeField(_('created at'),
                                       auto_now_add=True)
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(AUTH_USER_MODEL)
 
     class Meta:
         ordering = ['-created_at']
