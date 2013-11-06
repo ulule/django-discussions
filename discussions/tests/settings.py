@@ -1,4 +1,5 @@
 import os
+import django
 
 DATABASES = {
     'default': {
@@ -21,15 +22,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.sites',
     'discussions',
-    'django_nose',
 ]
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 ROOT_URLCONF = 'discussions.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates')
+    os.path.join(os.path.dirname(__file__), 'templates'),
 )
 
 SECRET_KEY = 'blabla'
+
+if django.VERSION <= (1, 6):
+    TEST_RUNNER = 'discover_runner.DiscoverRunner'

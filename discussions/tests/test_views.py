@@ -7,7 +7,7 @@ from ..compat import User
 
 
 class DiscussionsViewsTests(TestCase):
-    fixtures = ['users', 'messages']
+    fixtures = ['users.json', 'messages.json']
 
     def _test_login(self, named_url, **kwargs):
         """ Test that the view requires login """

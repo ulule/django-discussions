@@ -4,7 +4,6 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.utils.text import truncate_words
 from django.utils.encoding import python_2_unicode_compatible
 
 from discussions.managers import (DiscussionManager, ContactManager,
@@ -281,6 +280,8 @@ class Message(models.Model):
 
     def __str__(self):
         """ Human representation, displaying first ten words of the body. """
+        from ..compat import truncate_words
+
         truncated_body = truncate_words(self.body, 10)
         return "%(truncated_body)s" % {'truncated_body': truncated_body}
 

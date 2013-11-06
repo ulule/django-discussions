@@ -18,7 +18,7 @@ class CommaSeparatedTestForm(forms.Form):
 
 
 class CommaSeperatedFieldTests(TestCase):
-    fixtures = ['users']
+    fixtures = ['users.json']
 
     def test_invalid_data(self):
         # Test invalid data supplied to the field.

@@ -7,7 +7,7 @@ from ..compat import User
 
 
 class TemplateTagsTests(TestCase):
-    fixtures = ['users', 'messages']
+    fixtures = ['users.json', 'messages.json']
 
     def test_get_unread_message_count_for(self):
         user = User.objects.get(pk=1)

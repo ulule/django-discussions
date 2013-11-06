@@ -9,7 +9,7 @@ from ..compat import User
 
 class ComposeFormTests(TestCase):
     """ Test the compose form. """
-    fixtures = ['users']
+    fixtures = ['users.json']
 
     def test_invalid_data(self):
         """
@@ -65,7 +65,7 @@ class ComposeFormTests(TestCase):
 
 
 class ReplyFormTests(TestCase):
-    fixtures = ['users', 'messages']
+    fixtures = ['users.json', 'messages.json']
 
     def test_save_message(self):
         valid_data = {'body': 'Body'}
@@ -88,7 +88,7 @@ class ReplyFormTests(TestCase):
 
 
 class FolderFormTests(TestCase):
-    fixtures = ['users']
+    fixtures = ['users.json']
 
     def test_save_folder(self):
         valid_data = {'name': 'My folder'}

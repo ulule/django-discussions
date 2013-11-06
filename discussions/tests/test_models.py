@@ -1,12 +1,11 @@
 from django.test import TestCase
-from django.utils.text import truncate_words
 
 from ..models import Message, Recipient, Contact
-from ..compat import User
+from ..compat import User, truncate_words
 
 
 class MessageContactTests(TestCase):
-    fixtures = ['users', 'messages']
+    fixtures = ['users.json', 'messages.json']
 
     def test_string_formatting(self):
         """ Test the human representation of a message """
@@ -30,7 +29,7 @@ class MessageContactTests(TestCase):
 
 
 class MessageModelTests(TestCase):
-    fixtures = ['users', 'messages']
+    fixtures = ['users.json', 'messages.json']
 
     def test_string_formatting(self):
         """ Test the human representation of a message """
@@ -41,7 +40,7 @@ class MessageModelTests(TestCase):
 
 
 class MessageRecipientModelTest(TestCase):
-    fixtures = ['users', 'messages']
+    fixtures = ['users.json', 'messages.json']
 
     def test_string_formatting(self):
         """ Test the human representation of a recipient """
