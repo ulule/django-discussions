@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -122,14 +120,14 @@ class Recipient(models.Model):
         return self.status == self.STATUS.deleted
 
     def mark_as_deleted(self, commit=True):
-        self.deleted_at = datetime.now()
+        self.deleted_at = tznow()
         self.status = self.STATUS.deleted
 
         if commit:
             self.save()
 
     def mark_as_read(self, commit=True):
-        self.read_at = datetime.now()
+        self.read_at = tznow()
         self.status = self.STATUS.read
 
         if commit:

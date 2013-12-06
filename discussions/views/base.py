@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin, CreateView, UpdateView
@@ -16,6 +14,7 @@ from ..forms import ComposeForm, ReplyForm, FolderForm
 from ..helpers import lookup_discussions, lookup_profiles
 from .. import settings
 from ..compat import User
+from ..utils import tznow
 
 from pure_pagination import Paginator
 
@@ -128,7 +127,7 @@ class DiscussionDetailView(DetailView, FormMixin):
         recipients = Recipient.objects.filter(discussion=self.object,
                                               user=self.request.user)
 
-        now = datetime.now()
+        now = tznow()
         recipients.update(read_at=now, status=Recipient.STATUS.read)
 
         users = self.object.recipients.select_related('user')
@@ -326,7 +325,7 @@ class DiscussionRemoveView(View, DiscussionBulkMixin):
 
         if discussion_ids:
             # Delete all the messages, if they belong to the user.
-            now = datetime.now()
+            now = tznow()
             changed_message_list = set()
             for pk in self.valid_ids(discussion_ids):
                 discussion = get_object_or_404(Discussion, pk=pk)
