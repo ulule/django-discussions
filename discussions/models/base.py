@@ -146,8 +146,6 @@ class Discussion(models.Model):
                                         related_name='received_discussions',
                                         verbose_name=_('recipients'))
 
-    objects = DiscussionManager()
-
     created_at = models.DateTimeField(_('created at'),
                                       auto_now_add=True)
 
