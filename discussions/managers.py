@@ -3,56 +3,6 @@ from django.db.models import Q
 from django.db.models import signals
 
 
-class ContactManager(models.Manager):
-    """ Manager for the :class:`MessageContact` model """
-
-    def get_or_create(self, from_user, to_user, discussion):
-        """
-        Get or create a Contact
-
-        We override Django's :func:`get_or_create` because we want contact to
-        be unique in a bi-directional manner.
-
-        """
-        created = False
-        try:
-            contact = self.get(Q(from_user=from_user, to_user=to_user) |
-                               Q(from_user=to_user, to_user=from_user))
-
-        except self.model.DoesNotExist:
-            created = True
-            contact = self.create(from_user=from_user,
-                                  to_user=to_user,
-                                  latest_discussion=discussion)
-
-        return (contact, created)
-
-    def update_contact(self, from_user, to_user, message):
-        """ Get or update a contacts information """
-        contact, created = self.get_or_create(from_user,
-                                              to_user,
-                                              message)
-
-        # If the contact already existed, update the message
-        if not created:
-            contact.latest_message = message
-            contact.save()
-        return contact
-
-    def get_contacts_for(self, user):
-        """
-        Returns the contacts for this user.
-
-        Contacts are other users that this user has received messages
-        from or send messages to.
-
-        :param user:
-            The :class:`User` which to get the contacts for.
-
-        """
-        return self.filter(Q(from_user=user) | Q(to_user=user))
-
-
 class DiscussionManager(models.Manager):
     """ Manager for the :class:`Message` model. """
 
@@ -79,7 +29,6 @@ class DiscussionManager(models.Manager):
         discussion.save_recipients(list(to_user_list) + [sender, ])
 
         # Save the recipients
-        discussion.update_contacts(to_user_list)
 
         discussion.add_message(body)
 

@@ -1,31 +1,7 @@
 from django.test import TestCase
 
-from ..models import Message, Recipient, Contact
-from ..compat import User, truncate_words
-
-
-class MessageContactTests(TestCase):
-    fixtures = ['users.json', 'messages.json']
-
-    def test_string_formatting(self):
-        """ Test the human representation of a message """
-        contact = Contact.objects.get(pk=1)
-        correct_format = "thoas and ampelmann"
-        self.failUnlessEqual(contact.__unicode__(),
-                             correct_format)
-
-    def test_opposite_user(self):
-        """ Test if the opposite user is returned """
-        contact = Contact.objects.get(pk=1)
-        thoas = User.objects.get(pk=1)
-        ampelmann = User.objects.get(pk=2)
-
-        # Test the opposites
-        self.failUnlessEqual(contact.opposite_user(thoas),
-                             ampelmann)
-
-        self.failUnlessEqual(contact.opposite_user(ampelmann),
-                             thoas)
+from ..models import Message, Recipient
+from ..compat import truncate_words
 
 
 class MessageModelTests(TestCase):

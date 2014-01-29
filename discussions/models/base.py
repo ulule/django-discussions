@@ -4,8 +4,8 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 
-from discussions.managers import (DiscussionManager, ContactManager,
-                                  RecipientManager, MessageManager)
+from discussions.managers import (DiscussionManager, RecipientManager,
+                                  MessageManager)
 
 from ..utils import tznow
 
@@ -13,57 +13,6 @@ from model_utils import Choices
 
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
-
-
-@python_2_unicode_compatible
-class Contact(models.Model):
-    """
-    Contact model.
-
-    A contact is a user to whom a user has send a message to or
-    received a message from.
-
-    """
-    from_user = models.ForeignKey(AUTH_USER_MODEL,
-                                  verbose_name=_('from user'),
-                                  related_name=('from_contact_users'))
-
-    to_user = models.ForeignKey(AUTH_USER_MODEL,
-                                verbose_name=_('to user'),
-                                related_name=('to_contact_users'))
-
-    latest_discussion = models.ForeignKey('Discussion',
-                                          verbose_name=_("latest discussion"))
-
-    objects = ContactManager()
-
-    class Meta:
-        unique_together = ('from_user', 'to_user')
-        ordering = ['latest_discussion']
-        verbose_name = _('contact')
-        verbose_name_plural = _('contacts')
-        app_label = 'discussions'
-
-    def __str__(self):
-        return (_('%(from_user)s and %(to_user)s')
-                % {'from_user': self.from_user.username,
-                   'to_user': self.to_user.username})
-
-    def opposite_user(self, user):
-        """
-        Returns the user opposite of the user that is given
-
-        :param user:
-            A Django :class:`User`.
-
-        :return:
-            A Django :class:`User`.
-
-        """
-        if self.from_user == user:
-            return self.to_user
-
-        return self.from_user
 
 
 class Recipient(models.Model):
@@ -191,25 +140,6 @@ class Discussion(models.Model):
                                      discussion=self)
             created = True
         return created
-
-    def update_contacts(self, to_user_list):
-        """
-        Updates the contacts that are used for this message.
-
-        :param to_user_list:
-            List of Django :class:`User`.
-
-        :return:
-            A boolean if a user is contact is updated.
-
-        """
-        updated = False
-        for user in to_user_list:
-            Contact.objects.update_contact(self.sender,
-                                           user,
-                                           self)
-            updated = True
-        return updated
 
     def add_message(self, body, sender=None, commit=True):
         if not sender:

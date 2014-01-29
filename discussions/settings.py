@@ -15,9 +15,6 @@ FOLDER_MODEL = getattr(settings,
 MESSAGE_MODEL = getattr(settings,
                         'DISCUSSIONS_MESSAGE_MODEL',
                         'discussions.models.base.Message')
-CONTACT_MODEL = getattr(settings,
-                        'DISCUSSIONS_CONTACT_MODEL',
-                        'discussions.models.base.Contact')
 
 DISCUSSION_LIST_VIEW = getattr(settings,
                                'DISCUSSIONS_DISCUSSION_LIST_VIEW',
