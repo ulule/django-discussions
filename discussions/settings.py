@@ -5,16 +5,16 @@ PAGINATE_BY = getattr(settings, 'DISCUSSIONS_PAGINATE_BY', 20)
 
 RECIPIENT_MODEL = getattr(settings,
                           'DISCUSSIONS_RECIPIENT_MODEL',
-                          'discussions.models.base.Recipient')
+                          'discussions.models.recipient.Recipient')
 DISCUSSION_MODEL = getattr(settings,
                            'DISCUSSIONS_DISCUSSION_MODEL',
-                           'discussions.models.base.Discussion')
+                           'discussions.models.discussion.Discussion')
 FOLDER_MODEL = getattr(settings,
                        'DISCUSSIONS_FOLDER_MODEL',
-                       'discussions.models.base.Folder')
+                       'discussions.models.folder.Folder')
 MESSAGE_MODEL = getattr(settings,
                         'DISCUSSIONS_MESSAGE_MODEL',
-                        'discussions.models.base.Message')
+                        'discussions.models.message.Message')
 
 DISCUSSION_LIST_VIEW = getattr(settings,
                                'DISCUSSIONS_DISCUSSION_LIST_VIEW',

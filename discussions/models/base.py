@@ -7,7 +7,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from discussions.managers import (DiscussionManager, RecipientManager,
                                   MessageManager)
 
-from ..utils import tznow
+from ..utils import tznow, get_model_string
 
 from model_utils import Choices
 
@@ -28,10 +28,10 @@ class Recipient(models.Model):
     user = models.ForeignKey(AUTH_USER_MODEL,
                              verbose_name=_('recipient'))
 
-    discussion = models.ForeignKey('Discussion',
+    discussion = models.ForeignKey(get_model_string('Discussion'),
                                    verbose_name=_('discussion'))
 
-    folder = models.ForeignKey('Folder',
+    folder = models.ForeignKey(get_model_string('Folder'),
                                verbose_name=_('folder'),
                                null=True, blank=True,
                                related_name='recipients')
@@ -55,6 +55,7 @@ class Recipient(models.Model):
         verbose_name = _('recipient')
         verbose_name_plural = _('recipients')
         app_label = 'discussions'
+        abstract = True
 
     def __unicode__(self):
         return (_('%(discussion)s')
@@ -87,12 +88,12 @@ class Recipient(models.Model):
 class Discussion(models.Model):
     """ Private message model, from user to user(s) """
     sender = models.ForeignKey(AUTH_USER_MODEL,
-                               related_name='sent_discussions',
+                               related_name='%(class)s_sent',
                                verbose_name=_('sender'))
 
     recipients = models.ManyToManyField(AUTH_USER_MODEL,
                                         through='Recipient',
-                                        related_name='received_discussions',
+                                        related_name='%(class)s_received',
                                         verbose_name=_('recipients'))
 
     created_at = models.DateTimeField(_('created at'),
@@ -105,7 +106,10 @@ class Discussion(models.Model):
                                              null=True,
                                              blank=True)
 
-    latest_message = models.ForeignKey('Message', null=True, blank=True, related_name='latest_discussions')
+    latest_message = models.ForeignKey(get_model_string('Message'),
+                                       null=True,
+                                       blank=True,
+                                       related_name='latest_%(class)s')
 
     subject = models.CharField(max_length=255)
 
@@ -119,6 +123,7 @@ class Discussion(models.Model):
             ('can_view', 'Can view'),
         )
         app_label = 'discussions'
+        abstract = True
 
     def __str__(self):
         return 'Discussion opened by %s' % self.sender
@@ -183,7 +188,7 @@ class Message(models.Model):
                                related_name='sent_messages',
                                verbose_name=_('sender'))
 
-    discussion = models.ForeignKey('Discussion',
+    discussion = models.ForeignKey(get_model_string('Discussion'),
                                    related_name='messages',
                                    verbose_name=_('discussion'))
 
@@ -203,6 +208,7 @@ class Message(models.Model):
         verbose_name = _('message')
         verbose_name_plural = _('messages')
         app_label = 'discussions'
+        abstract = True
 
     def __str__(self):
         """ Human representation, displaying first ten words of the body. """
@@ -226,6 +232,7 @@ class Folder(models.Model):
         verbose_name = _('folder')
         verbose_name_plural = _('folders')
         app_label = 'discussions'
+        abstract = True
 
     def __str__(self):
         return self.name
