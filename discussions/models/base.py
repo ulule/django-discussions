@@ -88,12 +88,12 @@ class Recipient(models.Model):
 class Discussion(models.Model):
     """ Private message model, from user to user(s) """
     sender = models.ForeignKey(AUTH_USER_MODEL,
-                               related_name='%(class)s_sent',
+                               related_name='discussions_sent',
                                verbose_name=_('sender'))
 
     recipients = models.ManyToManyField(AUTH_USER_MODEL,
                                         through='Recipient',
-                                        related_name='%(class)s_received',
+                                        related_name='discussions_received',
                                         verbose_name=_('recipients'))
 
     created_at = models.DateTimeField(_('created at'),
@@ -109,7 +109,7 @@ class Discussion(models.Model):
     latest_message = models.ForeignKey(get_model_string('Message'),
                                        null=True,
                                        blank=True,
-                                       related_name='latest_%(class)s')
+                                       related_name='latest_discussions')
 
     subject = models.CharField(max_length=255)
 
@@ -129,6 +129,8 @@ class Discussion(models.Model):
         return 'Discussion opened by %s' % self.sender
 
     def save_recipients(self, to_user_list):
+        from . import Recipient
+
         """
         Save the recipients for this message
 
@@ -147,6 +149,8 @@ class Discussion(models.Model):
         return created
 
     def add_message(self, body, sender=None, commit=True):
+        from . import Message
+
         if not sender:
             sender = self.sender
 
