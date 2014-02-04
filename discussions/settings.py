@@ -37,12 +37,12 @@ DISCUSSION_DETAIL_VIEW = getattr(settings,
 DISCUSSION_REMOVE_VIEW = getattr(settings,
                                  'DISCUSSIONS_DISCUSSION_REMOVE_VIEW',
                                  'discussions.views.base.DiscussionRemoveView')
-DISCUSSION_MARK_READ_VIEW = getattr(settings,
-                               'DISCUSSIONS_DISCUSSION_MARK_READ_VIEW',
+DISCUSSION_MARK_AS_READ_VIEW = getattr(settings,
+                               'DISCUSSIONS_DISCUSSION_MARK_READ_AS_VIEW',
                                'discussions.views.base.DiscussionMarkAsReadView')
 
-DISCUSSION_MARK_UNREAD_VIEW = getattr(settings,
-                               'DISCUSSIONS_DISCUSSION_MARK_UNREAD_VIEW',
+DISCUSSION_MARK_AS_UNREAD_VIEW = getattr(settings,
+                               'DISCUSSIONS_DISCUSSION_MARK_UNREAD_AS_VIEW',
                                'discussions.views.base.DiscussionMarkAsUnreadView')
 
 DISCUSSION_MOVE_VIEW = getattr(settings,

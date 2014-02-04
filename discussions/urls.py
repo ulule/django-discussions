@@ -45,18 +45,25 @@ urlpatterns = patterns(
         pre_filter(views.DiscussionDeletedView.as_view()),
         name='discussions_deleted'),
 
+    url(r'^leave/$',
+        pre_filter(views.DiscussionLeaveView.as_view()),
+        name='discussions_leave'),
+
     url(r'^move/(?P<folder_id>[\d]+)$',
         pre_filter(views.DiscussionMoveView.as_view()),
         name='discussions_move'),
 
-    url(r'^markread/$',
+    url(r'^mark/read/$',
         pre_filter(views.DiscussionMarkAsReadView.as_view()),
-        name='discussions_markread'),
+        name='discussions_mark_as_read'),
 
-    url(r'^markunread/$',
+    url(r'^mark/unread/$',
         pre_filter(views.DiscussionMarkAsUnreadView.as_view()),
-        {'unread': True},
-        name='discussions_markunread'),
+        name='discussions_mark_as_unread'),
+
+    url(r'^folder/create/$',
+        pre_filter(views.FolderCreateView.as_view()),
+        name='discussions_folder_create'),
 
     url(r'^folder/(?P<folder_id>[\d]+)$',
         pre_filter(views.FolderDetailView.as_view()),
@@ -65,13 +72,5 @@ urlpatterns = patterns(
     url(r'^folder/(?P<folder_id>[\d]+)/update$',
         pre_filter(views.FolderUpdateView.as_view()),
         name='discussions_folder_update'),
-
-    url(r'^folder/create/$',
-        pre_filter(views.FolderCreateView.as_view()),
-        name='discussions_folder_create'),
-
-    url(r'^leave/$',
-        pre_filter(views.DiscussionLeaveView.as_view()),
-        name='discussions_leave'),
 
 )

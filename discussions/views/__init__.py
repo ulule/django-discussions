@@ -18,9 +18,9 @@ DiscussionRemoveView = load_class(settings.DISCUSSION_REMOVE_VIEW)
 
 DiscussionMoveView = load_class(settings.DISCUSSION_MOVE_VIEW)
 
-DiscussionMarkAsReadView = load_class(settings.DISCUSSION_MARK_READ_VIEW)
+DiscussionMarkAsReadView = load_class(settings.DISCUSSION_MARK_AS_READ_VIEW)
 
-DiscussionMarkAsUnreadView = load_class(settings.DISCUSSION_MARK_UNREAD_VIEW)
+DiscussionMarkAsUnreadView = load_class(settings.DISCUSSION_MARK_AS_UNREAD_VIEW)
 
 MessageComposeView = load_class(settings.MESSAGE_COMPOSE_VIEW)
 

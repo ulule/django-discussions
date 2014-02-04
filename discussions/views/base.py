@@ -64,9 +64,8 @@ class DiscussionSentView(DiscussionListView):
         user = self.request.user
 
         qs = (self.model.objects
-              .filter(discussion__sender=user, user=user))
-
-        qs = (qs.exclude(status=self.model.STATUS.deleted)
+              .filter(discussion__sender=user, user=user)
+              .exclude(status=self.model.STATUS.deleted)
               .order_by('-discussion__created_at')
               .select_related('user'))
 
@@ -79,10 +78,7 @@ class DiscussionUnreadView(DiscussionListView):
     def get_queryset(self):
         user = self.request.user
 
-        qs = (self.model.objects
-              .filter(user=user))
-
-        qs = (qs.filter(status=self.model.STATUS.unread)
+        qs = (self.model.objects.filter(user=user, status=self.model.STATUS.unread)
               .order_by('-discussion__updated_at', '-discussion__created_at')
               .select_related('user'))
 
@@ -95,10 +91,7 @@ class DiscussionReadView(DiscussionListView):
     def get_queryset(self):
         user = self.request.user
 
-        qs = (self.model.objects
-              .filter(user=user))
-
-        qs = (qs.filter(status=self.model.STATUS.read)
+        qs = (self.model.objects.filter(user=user, status=self.model.STATUS.read)
               .order_by('-discussion__updated_at', '-discussion__created_at')
               .select_related('user'))
 
