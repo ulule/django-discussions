@@ -186,20 +186,20 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
-    def test_valid_discussion_read(self):
-        """ ``POST`` to remove a discussion """
+    def test_valid_discussion_mark_read(self):
+        """ ``POST`` to mark a discussion as read """
         # Test that sign in is required
-        response = self.client.post(reverse('discussions_read'))
+        response = self.client.post(reverse('discussions_markread'))
         self.assertEqual(response.status_code, 302)
 
         # Sign in
         self.client.login(username='thoas', password='$ecret')
 
         # Test that only posts are allowed
-        response = self.client.get(reverse('discussions_read'))
+        response = self.client.get(reverse('discussions_markread'))
         self.assertEqual(response.status_code, 405)
 
-        response = self.client.post(reverse('discussions_read'),
+        response = self.client.post(reverse('discussions_markread'),
                                     data={'discussion_ids': '1'})
         self.assertRedirects(response,
                              reverse('discussions_list'))
@@ -207,6 +207,48 @@ class DiscussionsViewsTests(TestCase):
         recipient = Discussion.objects.get(pk=1).recipient_set.get(user=User.objects.get(pk=1))
 
         self.assertTrue(recipient.is_read())
+
+    def test_valid_discussion_mark_unread(self):
+        """ ``POST`` to mark a discussion as unread"""
+        # Test that sign in is required
+        response = self.client.post(reverse('discussions_markunread'))
+        self.assertEqual(response.status_code, 302)
+
+        # Sign in
+        self.client.login(username='thoas', password='$ecret')
+
+        # Test that only posts are allowed
+        response = self.client.get(reverse('discussions_markunread'))
+        self.assertEqual(response.status_code, 405)
+
+        response = self.client.post(reverse('discussions_markunread'),
+                                    data={'discussion_ids': '1'})
+        self.assertRedirects(response,
+                             reverse('discussions_list'))
+
+        recipient = Discussion.objects.get(pk=1).recipient_set.get(user=User.objects.get(pk=1))
+
+        self.assertFalse(recipient.is_read())
+
+    """def test_valid_discussion_leave(self):
+         ``POST`` to leave a discussion
+        # Test that sign in is required
+        response = self.client.post(reverse('discussions_leave'))
+        self.assertEqual(response.status_code, 302)
+
+        # Sign in
+        self.client.login(username='ampelmann', password='$ecret')
+
+        # Test that only posts are allowed
+        response = self.client.get(reverse('discussions_leave'))
+        self.assertEqual(response.status_code, 405)
+
+        response = self.client.post(reverse('discussions_leave'),
+                                    data={'discussion_ids': [1]})
+        self.assertRedirects(response,
+                             reverse('discussions_list'))"""
+
+
 
     def test_valid_discussion_remove(self):
         """ ``POST`` to remove a discussion """
@@ -326,6 +368,16 @@ class DiscussionsViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertTemplateUsed(response, 'discussions/unread.html')
+
+    def test_discussion_read(self):
+        """ ``GET`` the message list for a user """
+        self._test_login("discussions_unread")
+
+        self.client.login(username='thoas', password='$ecret')
+        response = self.client.get(reverse('discussions_read'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, 'discussions/read.html')
 
     def test_discussion_detail_between_two_users(self):
         """ ``GET`` to a detail page between two users """
