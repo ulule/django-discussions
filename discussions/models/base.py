@@ -83,6 +83,12 @@ class Recipient(models.Model):
         if commit:
             self.save()
 
+    def mark_as_unread(self, commit=True):
+        self.status = self.STATUS.unread
+
+        if commit:
+            self.save()
+
 
 @python_2_unicode_compatible
 class Discussion(models.Model):
@@ -183,6 +189,13 @@ class Discussion(models.Model):
             return True
 
         return user.has_perm('discussions.can_view')
+
+    def delete_recipient(self, user):
+        if user.id == self.sender_id:
+            return False
+
+        return self.recipients.through.objects.filter(discussion=self.pk,
+                                                      user=user.pk).delete()
 
 
 @python_2_unicode_compatible

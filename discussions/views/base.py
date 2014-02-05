@@ -64,9 +64,8 @@ class DiscussionSentView(DiscussionListView):
         user = self.request.user
 
         qs = (self.model.objects
-              .filter(discussion__sender=user, user=user))
-
-        qs = (qs.exclude(status=self.model.STATUS.deleted)
+              .filter(discussion__sender=user, user=user)
+              .exclude(status=self.model.STATUS.deleted)
               .order_by('-discussion__created_at')
               .select_related('user'))
 
@@ -79,10 +78,20 @@ class DiscussionUnreadView(DiscussionListView):
     def get_queryset(self):
         user = self.request.user
 
-        qs = (self.model.objects
-              .filter(user=user))
+        qs = (self.model.objects.filter(user=user, status=self.model.STATUS.unread)
+              .order_by('-discussion__updated_at', '-discussion__created_at')
+              .select_related('user'))
 
-        qs = (qs.filter(status=self.model.STATUS.unread)
+        return qs
+
+
+class DiscussionReadView(DiscussionListView):
+    template_name = 'discussions/read.html'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        qs = (self.model.objects.filter(user=user, status=self.model.STATUS.read)
               .order_by('-discussion__updated_at', '-discussion__created_at')
               .select_related('user'))
 
@@ -96,9 +105,7 @@ class DiscussionDeletedView(DiscussionListView):
         user = self.request.user
 
         qs = (self.model.objects
-              .filter(user=user))
-
-        qs = (qs.filter(status=self.model.STATUS.deleted)
+              .filter(user=user, status=self.model.STATUS.deleted)
               .order_by('-discussion__created_at')
               .select_related('user'))
 
@@ -272,12 +279,15 @@ class DiscussionMoveView(DetailView, DiscussionBulkMixin):
         return redirect(reverse('discussions_list'))
 
 
-class DiscussionReadView(View, DiscussionBulkMixin):
+class DiscussionMarkAsReadView(View, DiscussionBulkMixin):
     http_method_names = ['post']
 
     def post(self, *args, **kwargs):
         """
         A ``POST`` to mark as read discussions.
+
+        :param unread:
+            A Boolean that if ``True`` unread discussions.
 
         POST can have the following keys:
 
@@ -293,6 +303,77 @@ class DiscussionReadView(View, DiscussionBulkMixin):
                           .exclude(status=Recipient.STATUS.read))
             for recipient in recipients:
                 recipient.mark_as_read()
+
+        return redirect(reverse('discussions_list'))
+
+
+class DiscussionMarkAsUnreadView(View, DiscussionBulkMixin):
+    http_method_names = ['post']
+
+    def post(self, *args, **kwargs):
+        """
+        A ``POST`` to mark as unread discussions.
+
+        POST can have the following keys:
+
+            ``discussions_ids``
+                List of discussion id's that should be marked as unread.
+        """
+
+        discussion_ids = self.request.POST.getlist('discussion_ids')
+
+        if discussion_ids:
+            recipients = (Recipient.objects.filter(discussion__in=self.valid_ids(discussion_ids),
+                                                   user=self.request.user)
+                          .exclude(status=Recipient.STATUS.unread))
+            for recipient in recipients:
+                recipient.mark_as_unread()
+
+        return redirect(reverse('discussions_list'))
+
+
+class DiscussionLeaveView(View, DiscussionBulkMixin):
+    http_method_names = ['post']
+
+    def post(self, *args, **kwargs):
+        """
+        A ``POST`` to leave discussions.
+
+        POST can have the following keys:
+
+            ``discussions_ids``
+                List of discussion id's that should be deleted.
+
+            ``next``
+                String containing the URI which to redirect to after the keys are
+                removed. Redirect defaults to the inbox view.
+
+        The ``next`` value can also be supplied in the URI with ``?next=<value>``.
+
+        """
+
+        discussion_ids = self.request.POST.getlist('discussion_ids')
+        redirect_to = self.request.REQUEST.get('next', False)
+
+        if discussion_ids:
+            for pk in self.valid_ids(discussion_ids):
+                discussion = get_object_or_404(Discussion, pk=pk)
+
+                result = discussion.delete_recipient(self.request.user)
+
+                if result:
+                    message = ungettext('You left the discussion successfully.',
+                                        'You left the discussions successfully.',
+                                        len(discussion_ids))
+                    messages.success(self.request, message, fail_silently=True)
+                else:
+                    message = ungettext('You cannot leave the discussion.',
+                                        'You cannot leave the discussions.',
+                                        len(discussion_ids))
+                    messages.error(self.request, message, fail_silently=True)
+
+        if redirect_to:
+            return redirect(redirect_to)
 
         return redirect(reverse('discussions_list'))
 

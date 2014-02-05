@@ -25,18 +25,26 @@ DISCUSSION_SENT_VIEW = getattr(settings,
 DISCUSSION_DELETED_VIEW = getattr(settings,
                                   'DISCUSSIONS_DISCUSSION_DELETED_VIEW',
                                   'discussions.views.base.DiscussionDeletedView')
+DISCUSSION_READ_VIEW = getattr(settings,
+                                  'DISCUSSIONS_DISCUSSION_READ_VIEW',
+                                  'discussions.views.base.DiscussionReadView')
 DISCUSSION_UNREAD_VIEW = getattr(settings,
-                                 'DISCUSSIONS_DISCUSSION_UNREAD_VIEW',
-                                 'discussions.views.base.DiscussionUnreadView')
+                                  'DISCUSSIONS_DISCUSSION_UNREAD_VIEW',
+                                  'discussions.views.base.DiscussionUnreadView')
 DISCUSSION_DETAIL_VIEW = getattr(settings,
                                  'DISCUSSIONS_DISCUSSION_DETAIL_VIEW',
                                  'discussions.views.base.DiscussionDetailView')
 DISCUSSION_REMOVE_VIEW = getattr(settings,
                                  'DISCUSSIONS_DISCUSSION_REMOVE_VIEW',
                                  'discussions.views.base.DiscussionRemoveView')
-DISCUSSION_READ_VIEW = getattr(settings,
-                               'DISCUSSIONS_DISCUSSION_READ_VIEW',
-                               'discussions.views.base.DiscussionReadView')
+DISCUSSION_MARK_AS_READ_VIEW = getattr(settings,
+                               'DISCUSSIONS_DISCUSSION_MARK_READ_AS_VIEW',
+                               'discussions.views.base.DiscussionMarkAsReadView')
+
+DISCUSSION_MARK_AS_UNREAD_VIEW = getattr(settings,
+                               'DISCUSSIONS_DISCUSSION_MARK_UNREAD_AS_VIEW',
+                               'discussions.views.base.DiscussionMarkAsUnreadView')
+
 DISCUSSION_MOVE_VIEW = getattr(settings,
                                'DISCUSSIONS_DISCUSSION_MOVE_VIEW',
                                'discussions.views.base.DiscussionMoveView')
@@ -52,6 +60,10 @@ FOLDER_UPDATE_VIEW = getattr(settings,
 FOLDER_DETAIL_VIEW = getattr(settings,
                              'DISCUSSIONS_FOLDER_DETAIL_VIEW',
                              'discussions.views.base.FolderDetailView')
+
+DISCUSSION_LEAVE_VIEW = getattr(settings,
+                                 'DISCUSSIONS_DISCUSSION_LEAVE_VIEW',
+                                 'discussions.views.base.DiscussionLeaveView')
 
 COMPOSE_FORM = getattr(settings, 'DISCUSSIONS_COMPOSE_FORM', 'discussions.forms.base.ComposeForm')
 
