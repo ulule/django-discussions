@@ -422,6 +422,16 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertEqual(len(unread_messages), 0)
 
+    def test_folder_list(self):
+        """ ``GET`` the discussion list for a user """
+        self._test_login("discussions_folders_list")
+
+        self.client.login(username='thoas', password='$ecret')
+        response = self.client.get(reverse('discussions_folders_list'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, 'discussions/folder/list.html')
+
     def test_folder_create(self):
         self._test_login('discussions_folder_create')
 
@@ -448,7 +458,7 @@ class DiscussionsViewsTests(TestCase):
         self.assertEqual(folder.name, data['name'])
 
         self.assertRedirects(response,
-                             reverse('discussions_folder_detail', kwargs={
+                             reverse('discussions_list', kwargs={
                                  'folder_id': folder.pk
                              }))
 

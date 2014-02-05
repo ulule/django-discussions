@@ -51,16 +51,15 @@ DISCUSSION_MOVE_VIEW = getattr(settings,
 MESSAGE_COMPOSE_VIEW = getattr(settings,
                                'DISCUSSIONS_MESSAGE_COMPOSE_VIEW',
                                'discussions.views.base.MessageComposeView')
+FOLDERS_LIST_VIEW  = getattr(settings,
+                             'DISCUSSIONS_FOLDER_LIST_VIEW',
+                             'discussions.views.base.FoldersListView')
 FOLDER_CREATE_VIEW = getattr(settings,
                              'DISCUSSIONS_FOLDER_CREATE_VIEW',
                              'discussions.views.base.FolderCreateView')
 FOLDER_UPDATE_VIEW = getattr(settings,
                              'DISCUSSIONS_FOLDER_UPDATE_VIEW',
                              'discussions.views.base.FolderUpdateView')
-FOLDER_DETAIL_VIEW = getattr(settings,
-                             'DISCUSSIONS_FOLDER_DETAIL_VIEW',
-                             'discussions.views.base.FolderDetailView')
-
 DISCUSSION_LEAVE_VIEW = getattr(settings,
                                  'DISCUSSIONS_DISCUSSION_LEAVE_VIEW',
                                  'discussions.views.base.DiscussionLeaveView')

@@ -1,0 +1,22 @@
+{% extends "discussions/base.html" %}
+{% load i18n %}
+
+{% block content_title %}<h2>{% trans "Create a folder" %}</h2>{% endblock %}
+
+{% block site_content %}
+    {{ block.super }}
+
+    <div id="folders_list">
+        {% for folder in folders_list %}
+
+        <div id='folder_item'>
+
+        	<a href="{% url 'discussions_list' folder.pk %}"> {{folder.name}} </a>
+       	</div>
+
+        {% endfor %}
+    </div>
+
+    <a class="gh-button" href="{% url "discussions_folder_create" %}">{% trans "Create a new folder" %}</a>
+
+{% endblock %}

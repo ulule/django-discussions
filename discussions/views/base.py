@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.utils.translation import ungettext
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.db import models
 from django.http import Http404
 
 from ..models import Discussion, Folder, Recipient
@@ -26,25 +25,38 @@ class DiscussionListView(ListView):
     context_object_name = 'recipient_list'
     paginator_class = Paginator
 
-    def get_queryset(self):
-        self.user = None
+    def dispatch(self, request, *args, **kwargs):
+        self.user = request.user
+        self.folder = None
+        self.folders_list = Folder.objects.all()
 
-        if self.kwargs.get('username'):
-            username = self.kwargs.get('username')
+        if kwargs.get('username', None) and request.user.is_staff:
+            username = kwargs.get('username')
 
             self.user = get_object_or_404(User, username=username)
 
-            qs = (self.model.objects
-                  .filter(models.Q(user=self.request.user, discussion__sender=self.user) |
-                          models.Q(user=self.user, discussion__sender=self.request.user)))
-        else:
-            qs = (self.model.objects
-                  .filter(user=self.request.user))
+        if kwargs.get('folder_id', None):
+            folder_id = kwargs.get('folder_id')
 
-        qs = (qs.exclude(status=self.model.STATUS.deleted)
-              .exclude(folder__isnull=False)
+            self.folder = get_object_or_404(Folder.objects.filter(user=self.user), pk=folder_id)
+
+        return super(DiscussionListView, self).dispatch(request, *args, **kwargs)
+
+    def get_base_queryset(self):
+        qs = (self.model.objects
+              .filter(user=self.user)
               .order_by('-discussion__updated_at', '-discussion__created_at')
               .select_related('user'))
+
+        return qs
+
+    def get_queryset(self):
+        if self.folder:
+            qs = (self.get_base_queryset()
+                  .filter(folder=self.folder))
+        else:
+            qs = (self.get_base_queryset().exclude(status=self.model.STATUS.deleted)
+                  .exclude(folder__isnull=False))
 
         return qs
 
@@ -54,62 +66,58 @@ class DiscussionListView(ListView):
         lookup_discussions(context[self.context_object_name])
         lookup_profiles(context[self.context_object_name])
 
+        context['folder'] = self.folder
+        context['folders_list'] = self.folders_list
+
         return context
+
+
+class FoldersListView(ListView):
+    template_name = 'discussions/folder/list.html'
+    paginate_by = settings.PAGINATE_BY
+    model = Folder
+    context_object_name = 'folders_list'
+    paginator_class = Paginator
+
+    def get_queryset(self):
+        qs = (self.model.objects
+              .filter(user=self.request.user)
+              .select_related('user'))
+
+        return qs
 
 
 class DiscussionSentView(DiscussionListView):
     template_name = 'discussions/sent.html'
 
     def get_queryset(self):
-        user = self.request.user
-
-        qs = (self.model.objects
-              .filter(discussion__sender=user, user=user)
-              .exclude(status=self.model.STATUS.deleted)
-              .order_by('-discussion__created_at')
-              .select_related('user'))
-
-        return qs
+        return (self.get_base_queryset()
+                .filter(discussion__sender=self.user, folder=self.folder)
+                .exclude(status=self.model.STATUS.deleted))
 
 
 class DiscussionUnreadView(DiscussionListView):
     template_name = 'discussions/unread.html'
 
     def get_queryset(self):
-        user = self.request.user
-
-        qs = (self.model.objects.filter(user=user, status=self.model.STATUS.unread)
-              .order_by('-discussion__updated_at', '-discussion__created_at')
-              .select_related('user'))
-
-        return qs
+        return (self.get_base_queryset()
+                .filter(status=self.model.STATUS.unread, folder=self.folder))
 
 
 class DiscussionReadView(DiscussionListView):
     template_name = 'discussions/read.html'
 
     def get_queryset(self):
-        user = self.request.user
-
-        qs = (self.model.objects.filter(user=user, status=self.model.STATUS.read)
-              .order_by('-discussion__updated_at', '-discussion__created_at')
-              .select_related('user'))
-
-        return qs
+        return (self.get_base_queryset()
+                .filter(status=self.model.STATUS.read, folder=self.folder))
 
 
 class DiscussionDeletedView(DiscussionListView):
     template_name = 'discussions/deleted.html'
 
     def get_queryset(self):
-        user = self.request.user
-
-        qs = (self.model.objects
-              .filter(user=user, status=self.model.STATUS.deleted)
-              .order_by('-discussion__created_at')
-              .select_related('user'))
-
-        return qs
+        return (self.get_base_queryset()
+                .filter(status=self.model.STATUS.deleted, folder=self.folder))
 
 
 class DiscussionDetailView(DetailView, FormMixin):
@@ -462,7 +470,7 @@ class FolderCreateView(CreateView):
         return redirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse('discussions_folder_detail', kwargs={
+        return reverse('discussions_list', kwargs={
             'folder_id': self.object.pk
         })
 
@@ -486,32 +494,3 @@ class FolderUpdateView(UpdateView):
         return reverse('discussions_folder_update', kwargs={
             'folder_id': self.object.pk
         })
-
-
-class FolderDetailView(DiscussionListView):
-    model = Folder
-    template_name = 'discussions/folder/detail.html'
-    context_object_name = 'recipient_list'
-    context_object = 'folder'
-    paginate_by = settings.PAGINATE_BY
-
-    def get_object(self):
-        obj = get_object_or_404(Folder.objects.filter(user=self.request.user),
-                                pk=self.kwargs.get('folder_id'))
-
-        self.object = obj
-
-        return obj
-
-    def get_context_data(self, **kwargs):
-        data = super(FolderDetailView, self).get_context_data(**kwargs)
-
-        data[self.context_object] = self.object
-
-        return data
-
-    def get_queryset(self):
-        return (self.get_object()
-                .recipients
-                .order_by('-discussion__created_at')
-                .select_related('user'))

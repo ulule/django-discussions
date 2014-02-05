@@ -25,29 +25,33 @@ urlpatterns = patterns(
         {'undo': True},
         name='discussions_unremove'),
 
-    url(r'^(?:(?P<username>[\w\-\_]+))?$',
+    url(r'^(?:(?P<username>[\w\-\_]+))?(?:folder/(?P<folder_id>[\d]+))?$',
         pre_filter(views.DiscussionListView.as_view()),
         name='discussions_list'),
 
-    url(r'^sent/$',
+    url(r'^filter/sent/(?:(?P<folder_id>[\d]+))?$',
         pre_filter(views.DiscussionSentView.as_view()),
         name='discussions_sent'),
 
-    url(r'^unread/$',
+    url(r'^filter/unread/(?:(?P<folder_id>[\d]+))?$',
         pre_filter(views.DiscussionUnreadView.as_view()),
         name='discussions_unread'),
 
-    url(r'^read/$',
+    url(r'^filter/read/(?:(?P<folder_id>[\d]+))?$',
         pre_filter(views.DiscussionReadView.as_view()),
         name='discussions_read'),
 
-    url(r'^trash/$',
+    url(r'^filter/trash/$',
         pre_filter(views.DiscussionDeletedView.as_view()),
         name='discussions_deleted'),
 
     url(r'^leave/$',
         pre_filter(views.DiscussionLeaveView.as_view()),
         name='discussions_leave'),
+
+    url(r'^folders/all/$',
+        pre_filter(views.FoldersListView.as_view()),
+        name='discussions_folders_list'),
 
     url(r'^move/(?P<folder_id>[\d]+)$',
         pre_filter(views.DiscussionMoveView.as_view()),
@@ -64,10 +68,6 @@ urlpatterns = patterns(
     url(r'^folder/create/$',
         pre_filter(views.FolderCreateView.as_view()),
         name='discussions_folder_create'),
-
-    url(r'^folder/(?P<folder_id>[\d]+)$',
-        pre_filter(views.FolderDetailView.as_view()),
-        name='discussions_folder_detail'),
 
     url(r'^folder/(?P<folder_id>[\d]+)/update$',
         pre_filter(views.FolderUpdateView.as_view()),
