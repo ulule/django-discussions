@@ -306,6 +306,7 @@ class DiscussionMarkAsReadView(View, DiscussionBulkMixin):
 
         return redirect(reverse('discussions_list'))
 
+
 class DiscussionMarkAsUnreadView(View, DiscussionBulkMixin):
     http_method_names = ['post']
 
@@ -329,6 +330,7 @@ class DiscussionMarkAsUnreadView(View, DiscussionBulkMixin):
                 recipient.mark_as_unread()
 
         return redirect(reverse('discussions_list'))
+
 
 class DiscussionLeaveView(View, DiscussionBulkMixin):
     http_method_names = ['post']
@@ -356,22 +358,25 @@ class DiscussionLeaveView(View, DiscussionBulkMixin):
         if discussion_ids:
             for pk in self.valid_ids(discussion_ids):
                 discussion = get_object_or_404(Discussion, pk=pk)
-                try:
-                    discussion.delete_recipient(self.request.user)
+
+                result = discussion.delete_recipient(self.request.user)
+
+                if result:
                     message = ungettext('You left the discussion successfully.',
                                         'You left the discussions successfully.',
                                         len(discussion_ids))
                     messages.success(self.request, message, fail_silently=True)
-                except:
+                else:
                     message = ungettext('You cannot leave the discussion.',
                                         'You cannot leave the discussions.',
                                         len(discussion_ids))
                     messages.error(self.request, message, fail_silently=True)
+
         if redirect_to:
             return redirect(redirect_to)
 
         return redirect(reverse('discussions_list'))
-        
+
 
 class DiscussionRemoveView(View, DiscussionBulkMixin):
     http_method_names = ['post']
