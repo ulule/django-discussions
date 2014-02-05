@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-
 from ..forms import ComposeForm, FolderForm
 from ..models import Message, Recipient, Discussion, Folder
 from ..compat import User
@@ -186,20 +185,20 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
-    def test_valid_discussion_mark_read(self):
+    def test_valid_discussion_mark_as_read(self):
         """ ``POST`` to mark a discussion as read """
         # Test that sign in is required
-        response = self.client.post(reverse('discussions_markread'))
+        response = self.client.post(reverse('discussions_mark_as_read'))
         self.assertEqual(response.status_code, 302)
 
         # Sign in
         self.client.login(username='thoas', password='$ecret')
 
         # Test that only posts are allowed
-        response = self.client.get(reverse('discussions_markread'))
+        response = self.client.get(reverse('discussions_mark_as_read'))
         self.assertEqual(response.status_code, 405)
 
-        response = self.client.post(reverse('discussions_markread'),
+        response = self.client.post(reverse('discussions_mark_as_read'),
                                     data={'discussion_ids': '1'})
         self.assertRedirects(response,
                              reverse('discussions_list'))
@@ -208,20 +207,20 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertTrue(recipient.is_read())
 
-    def test_valid_discussion_mark_unread(self):
+    def test_valid_discussion_mark_as_unread(self):
         """ ``POST`` to mark a discussion as unread"""
         # Test that sign in is required
-        response = self.client.post(reverse('discussions_markunread'))
+        response = self.client.post(reverse('discussions_mark_as_unread'))
         self.assertEqual(response.status_code, 302)
 
         # Sign in
         self.client.login(username='thoas', password='$ecret')
 
         # Test that only posts are allowed
-        response = self.client.get(reverse('discussions_markunread'))
+        response = self.client.get(reverse('discussions_mark_as_unread'))
         self.assertEqual(response.status_code, 405)
 
-        response = self.client.post(reverse('discussions_markunread'),
+        response = self.client.post(reverse('discussions_mark_as_unread'),
                                     data={'discussion_ids': '1'})
         self.assertRedirects(response,
                              reverse('discussions_list'))
@@ -230,9 +229,10 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertFalse(recipient.is_read())
 
-    """def test_valid_discussion_leave(self):
-         ``POST`` to leave a discussion
-        # Test that sign in is required
+
+    def test_valid_discussion_leave(self):
+        """ ``POST`` to leave a discussion
+        # Test that sign in is required'"""
         response = self.client.post(reverse('discussions_leave'))
         self.assertEqual(response.status_code, 302)
 
@@ -245,10 +245,48 @@ class DiscussionsViewsTests(TestCase):
 
         response = self.client.post(reverse('discussions_leave'),
                                     data={'discussion_ids': [1]})
+
         self.assertRedirects(response,
-                             reverse('discussions_list'))"""
+                             reverse('discussions_list'))
 
+        d = Discussion.objects.get(pk=1)
+        u = User.objects.get(pk=2)
+        r = d.recipients.through.objects.filter(discussion=1, user=u)
 
+        discussion_left = True
+        if len(r)>0:
+            discussion_left = False
+
+        self.assertTrue(discussion_left)
+
+    def test_invalid_discussion_leave(self):
+        """ ``POST`` to leave a discussion
+        # Test that sign in is required'"""
+        response = self.client.post(reverse('discussions_leave'))
+        self.assertEqual(response.status_code, 302)
+
+        # Sign in
+        self.client.login(username='thoas', password='$ecret')
+
+        # Test that only posts are allowed
+        response = self.client.get(reverse('discussions_leave'))
+        self.assertEqual(response.status_code, 405)
+
+        response = self.client.post(reverse('discussions_leave'),
+                                    data={'discussion_ids': [1]})
+
+        self.assertRedirects(response,
+                             reverse('discussions_list'))
+
+        d = Discussion.objects.get(pk=1)
+        u = User.objects.get(pk=1)
+        r = d.recipients.through.objects.filter(discussion=1, user=u)
+
+        discussion_left = True
+        if len(r)>0:
+            discussion_left = False
+
+        self.assertFalse(discussion_left)
 
     def test_valid_discussion_remove(self):
         """ ``POST`` to remove a discussion """

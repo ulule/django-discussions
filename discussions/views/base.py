@@ -105,9 +105,7 @@ class DiscussionDeletedView(DiscussionListView):
         user = self.request.user
 
         qs = (self.model.objects
-              .filter(user=user))
-
-        qs = (qs.filter(status=self.model.STATUS.deleted)
+              .filter(user=user, status=self.model.STATUS.deleted)
               .order_by('-discussion__created_at')
               .select_related('user'))
 
