@@ -229,7 +229,6 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertFalse(recipient.is_read())
 
-
     def test_valid_discussion_leave(self):
         """ ``POST`` to leave a discussion
         # Test that sign in is required'"""
@@ -249,17 +248,9 @@ class DiscussionsViewsTests(TestCase):
         self.assertRedirects(response,
                              reverse('discussions_list'))
 
-        d = Discussion.objects.get(pk=1)
-        u = User.objects.get(pk=2)
-        r = d.recipients.through.objects.filter(discussion=1, user=u)
+        self.assertFalse(Discussion.objects.get(pk=1).recipients.filter(pk=2).exists())
 
-        discussion_left = True
-        if len(r)>0:
-            discussion_left = False
-
-        self.assertTrue(discussion_left)
-
-    def test_invalid_discussion_leave(self):
+    def test_invalid_discussion_leave_when_sender(self):
         """ ``POST`` to leave a discussion
         # Test that sign in is required'"""
         response = self.client.post(reverse('discussions_leave'))
@@ -278,15 +269,7 @@ class DiscussionsViewsTests(TestCase):
         self.assertRedirects(response,
                              reverse('discussions_list'))
 
-        d = Discussion.objects.get(pk=1)
-        u = User.objects.get(pk=1)
-        r = d.recipients.through.objects.filter(discussion=1, user=u)
-
-        discussion_left = True
-        if len(r)>0:
-            discussion_left = False
-
-        self.assertFalse(discussion_left)
+        self.assertTrue(Discussion.objects.get(pk=1).recipients.filter(pk=2).exists())
 
     def test_valid_discussion_remove(self):
         """ ``POST`` to remove a discussion """
