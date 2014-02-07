@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
 from django.db.models import signals
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class DiscussionManager(models.Manager):
@@ -28,8 +29,6 @@ class DiscussionManager(models.Manager):
 
         discussion.save_recipients(list(to_user_list) + [sender, ])
 
-        # Save the recipients
-
         discussion.add_message(body)
 
         return discussion
@@ -45,6 +44,22 @@ class DiscussionManager(models.Manager):
 
 class RecipientManager(models.Manager):
     """ Manager for the :class:`MessageRecipient` model. """
+
+    def contribute_to_class(self, cls, name):
+        signals.post_save.connect(self.post_save, sender=cls)
+        signals.post_delete.connect(self.post_delete, sender=cls)
+        return super(RecipientManager, self).contribute_to_class(cls, name)
+
+    def post_save(self, instance, **kwargs):
+        if kwargs.get('created', False):
+            discussion = instance.discussion
+            discussion.update_counters()
+
+    def post_delete(self, instance, **kwargs):
+        try:
+            instance.discussion.update_counters()
+        except ObjectDoesNotExist:
+            pass
 
     def count_unread_messages_for(self, user):
         """
@@ -86,11 +101,17 @@ class RecipientManager(models.Manager):
 class MessageManager(models.Manager):
     def contribute_to_class(self, cls, name):
         signals.post_save.connect(self.post_save, sender=cls)
+        signals.post_delete.connect(self.post_delete, sender=cls)
         return super(MessageManager, self).contribute_to_class(cls, name)
 
     def post_save(self, instance, **kwargs):
         if kwargs.get('created', False):
             discussion = instance.discussion
-
             discussion.latest_message = instance
-            discussion.save()
+            discussion.update_counters()
+
+    def post_delete(self, instance, **kwargs):
+        try:
+            instance.discussion.update_counters()
+        except ObjectDoesNotExist:
+            pass

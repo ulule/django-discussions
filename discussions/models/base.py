@@ -119,6 +119,12 @@ class Discussion(models.Model):
 
     subject = models.CharField(max_length=255)
 
+    recipients_count = models.PositiveIntegerField(default=0,
+                                                   null=True, blank=True)
+
+    messages_count = models.PositiveIntegerField(default=0,
+                                                 null=True, blank=True)
+
     objects = DiscussionManager()
 
     class Meta:
@@ -133,6 +139,15 @@ class Discussion(models.Model):
 
     def __str__(self):
         return 'Discussion opened by %s' % self.sender
+
+    def update_counters(self, commit=True):
+        from ..compat import update_fields
+
+        self.recipients_count = self.recipients.count()
+        self.messages_count = self.messages.count()
+
+        if commit:
+            update_fields(self, fields=('recipients_count', 'messages_count'))
 
     def save_recipients(self, to_user_list):
         from . import Recipient
