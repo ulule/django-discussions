@@ -7,13 +7,14 @@ from django.contrib import messages
 from django.utils.translation import ungettext
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.http import Http404
+from django.utils.functional import cached_property
 
 from ..models import Discussion, Folder, Recipient
 from ..forms import ComposeForm, ReplyForm, FolderForm
 from ..helpers import lookup_discussions, lookup_profiles
 from .. import settings
 from ..compat import User
-from ..utils import tznow
+from ..utils import tznow, load_class
 
 from pure_pagination import Paginator
 
@@ -25,22 +26,27 @@ class DiscussionListView(ListView):
     context_object_name = 'recipient_list'
     paginator_class = Paginator
 
-    def dispatch(self, request, *args, **kwargs):
-        self.user = request.user
-        self.folder = None
-        self.folders_list = Folder.objects.all()
+    @cached_property
+    def user(self):
+        user = self.request.user
 
-        if kwargs.get('username', None) and request.user.is_staff:
-            username = kwargs.get('username')
+        if self.kwargs.get('username', None) and self.request.user.is_staff:
+            username = self.kwargs.get('username')
 
-            self.user = get_object_or_404(User, username=username)
+            user = get_object_or_404(User, username=username)
 
-        if kwargs.get('folder_id', None):
-            folder_id = kwargs.get('folder_id')
+        return user
 
-            self.folder = get_object_or_404(Folder.objects.filter(user=self.user), pk=folder_id)
+    @cached_property
+    def folder(self):
+        folder = None
 
-        return super(DiscussionListView, self).dispatch(request, *args, **kwargs)
+        folder_id = self.kwargs.get('folder_id')
+
+        if folder_id:
+            folder = get_object_or_404(Folder.objects.filter(user=self.user), pk=folder_id)
+
+        return folder
 
     def get_base_queryset(self):
         qs = (self.model.objects
@@ -66,8 +72,7 @@ class DiscussionListView(ListView):
         lookup_discussions(context[self.context_object_name])
         lookup_profiles(context[self.context_object_name])
 
-        context['folder'] = self.folder
-        context['folders_list'] = self.folders_list
+        context['folder_list'] = Folder.objects.all()
 
         return context
 
@@ -87,7 +92,7 @@ class FoldersListView(ListView):
         return qs
 
 
-class DiscussionSentView(DiscussionListView):
+class DiscussionSentView(load_class(settings.DISCUSSION_LIST_VIEW)):
     template_name = 'discussions/sent.html'
 
     def get_queryset(self):
@@ -96,7 +101,7 @@ class DiscussionSentView(DiscussionListView):
                 .exclude(status=self.model.STATUS.deleted))
 
 
-class DiscussionUnreadView(DiscussionListView):
+class DiscussionUnreadView(load_class(settings.DISCUSSION_LIST_VIEW)):
     template_name = 'discussions/unread.html'
 
     def get_queryset(self):
@@ -104,7 +109,7 @@ class DiscussionUnreadView(DiscussionListView):
                 .filter(status=self.model.STATUS.unread, folder=self.folder))
 
 
-class DiscussionReadView(DiscussionListView):
+class DiscussionReadView(load_class(settings.DISCUSSION_LIST_VIEW)):
     template_name = 'discussions/read.html'
 
     def get_queryset(self):
@@ -112,7 +117,7 @@ class DiscussionReadView(DiscussionListView):
                 .filter(status=self.model.STATUS.read, folder=self.folder))
 
 
-class DiscussionDeletedView(DiscussionListView):
+class DiscussionDeletedView(load_class(settings.DISCUSSION_LIST_VIEW)):
     template_name = 'discussions/deleted.html'
 
     def get_queryset(self):
