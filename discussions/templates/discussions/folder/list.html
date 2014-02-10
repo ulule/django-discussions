@@ -8,15 +8,11 @@
 
     <div id="folders_list">
         {% for folder in folders_list %}
-
-        <div id='folder_item'>
-
-        	<a href="{% url 'discussions_list' folder.pk %}"> {{folder.name}} </a>
-       	</div>
-
+            <div id='folder_item'>
+                <a href="{% url 'discussions_list' folder.pk %}"> {{folder.name}} </a>
+            </div>
         {% endfor %}
     </div>
 
     <a class="gh-button" href="{% url "discussions_folder_create" %}">{% trans "Create a new folder" %}</a>
-
 {% endblock %}

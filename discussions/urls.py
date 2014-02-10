@@ -25,7 +25,7 @@ urlpatterns = patterns(
         {'undo': True},
         name='discussions_unremove'),
 
-    url(r'^(?:(?P<username>[\w\-\_]+))?(?:folder/(?P<folder_id>[\d]+))?$',
+    url(r'^(?:folder/(?P<folder_id>[\d]+))?$',
         pre_filter(views.DiscussionListView.as_view()),
         name='discussions_list'),
 

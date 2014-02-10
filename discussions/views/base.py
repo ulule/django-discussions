@@ -28,14 +28,7 @@ class DiscussionListView(ListView):
 
     @cached_property
     def user(self):
-        user = self.request.user
-
-        if self.kwargs.get('username', None) and self.request.user.is_staff:
-            username = self.kwargs.get('username')
-
-            user = get_object_or_404(User, username=username)
-
-        return user
+        return self.request.user
 
     @cached_property
     def folder(self):

@@ -19,7 +19,7 @@
             {% for recipient in discussion.recipients.all %}
                 <ul>
                     {% if recipient != user %}
-                        <li><a href="{% url 'discussions_list' recipient.username %}">{{ recipient }}</a></li>
+                        <li><a href="{% url 'discussions_list' %}">{{ recipient }}</a></li>
                     {% endif %}
                 </ul>
             {% endfor %}

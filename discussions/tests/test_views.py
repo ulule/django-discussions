@@ -402,12 +402,10 @@ class DiscussionsViewsTests(TestCase):
 
     def test_discussion_detail_between_two_users(self):
         """ ``GET`` to a detail page between two users """
-        self._test_login('discussions_list',
-                         kwargs={'username': 'oleiade'})
+        self._test_login('discussions_list')
         self.client.login(username='thoas', password='$ecret')
 
-        response = self.client.get(reverse('discussions_list',
-                                           kwargs={'username': 'oleiade'}))
+        response = self.client.get(reverse('discussions_list'))
 
         self.assertEqual(response.status_code, 200)
 
