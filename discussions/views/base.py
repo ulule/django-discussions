@@ -66,6 +66,7 @@ class DiscussionListView(ListView):
         lookup_profiles(context[self.context_object_name])
 
         context['folder_list'] = Folder.objects.all()
+        context['folder'] = self.folder
 
         return context
 
