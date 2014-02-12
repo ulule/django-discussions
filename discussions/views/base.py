@@ -378,8 +378,8 @@ class DiscussionLeaveView(View, DiscussionBulkMixin):
                                         len(discussion_ids))
                     messages.success(self.request, message, fail_silently=True)
                 else:
-                    message = ungettext('You cannot leave the discussion.',
-                                        'You cannot leave the discussions.',
+                    message = ungettext('You created this discussion, you cannot leave it.',
+                                        'You created this discussions, you cannot leave them.',
                                         len(discussion_ids))
                     messages.error(self.request, message, fail_silently=True)
 
