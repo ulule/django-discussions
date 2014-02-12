@@ -8,7 +8,7 @@ pre_filter = load_class(settings.PRE_FILTER)
 
 urlpatterns = patterns(
     '',
-    url(r'^compose(?:\/(?P<recipient>[\w\-\_\+]+))?/$',
+    url(r'^compose(?:\/(?P<recipients>[\w\-\_\+]+))?/$',
         pre_filter(views.MessageComposeView.as_view()),
         name='discussions_compose'),
 
