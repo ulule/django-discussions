@@ -189,12 +189,14 @@ class MessageComposeView(FormView):
     def get_template_names(self):
         return [self.template_name, ]
 
-    def get_initial(self):
+    @cached_property
+    def recipients(self):
         recipients = None
-        initial = {}
 
         if self.request.method == 'POST':
             recipients = self.request.POST.get('recipients', None)
+            if recipients is None and self.kwargs.get('recipients'):
+                recipients = self.kwargs.get('recipients')
         elif self.kwargs.get('recipients'):
             recipients = self.kwargs.get('recipients')
 
@@ -202,9 +204,12 @@ class MessageComposeView(FormView):
             username_list = [r.strip() for r in recipients.split('+')]
             recipients = [u for u in User.objects.filter(username__in=username_list)]
 
-            self.recipients = recipients
+        return recipients
 
-            initial['to'] = recipients
+    def get_initial(self):
+        initial = {
+            'to': self.recipients
+        }
 
         return initial.copy()
 
