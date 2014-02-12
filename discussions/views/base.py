@@ -190,32 +190,27 @@ class MessageComposeView(FormView):
         return [self.template_name, ]
 
     def get_initial(self):
-        recipients = None
+        recipient = None
         initial = {}
 
-        if self.request.method == 'POST':
-            recipients = self.request.POST.get('recipients', None)
-        elif self.kwargs.get('recipients'):
-            recipients = self.kwargs.get('recipients')
+        if self.kwargs.get('recipient'):
+            recipient = self.kwargs.get('recipient')
 
-        if recipients:
-            username_list = [r.strip() for r in recipients.split('+')]
-            recipients = [u for u in User.objects.filter(username__in=username_list)]
+        if recipient:
+            recipient = User.objects.get(username=recipient)
 
-            self.recipients = recipients
-
-            initial['to'] = recipients
+            self.recipient = recipient
 
         return initial.copy()
 
     def get_context_data(self, **kwargs):
         data = super(MessageComposeView, self).get_context_data(**kwargs)
 
-        return dict(data, **{'recipients': self.recipients
-                             if hasattr(self, 'recipients') else None})
+        return dict(data, **{'recipient': self.recipient
+                             if hasattr(self, 'recipient') else None})
 
     def form_valid(self, form):
-        self.object = form.save(self.request.user)
+        self.object = form.save(self.request.user, self.recipient)
 
         return redirect(self.get_success_url(form))
 
@@ -229,17 +224,19 @@ class MessageComposeView(FormView):
             redirect_to = requested_redirect
         elif self.kwargs.get('success_url'):
             redirect_to = self.kwargs.get('success_url')
-        elif len(form.cleaned_data['to']) == 1:
+        else:
             redirect_to = reverse('discussions_detail',
                                   kwargs={'discussion_id': self.object.pk})
 
         return redirect_to
 
     def post(self, request, *args, **kwargs):
-        if self.submit_key in request.POST:
-            return super(MessageComposeView, self).post(request, *args, **kwargs)
+        form = self.get_form(self.get_form_class())
 
-        return self.get(request, *args, **kwargs)
+        if form.is_valid():
+            return self.form_valid(form)
+
+        return self.form_invalid(form)
 
 
 class DiscussionBulkMixin(object):
