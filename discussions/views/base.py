@@ -175,7 +175,7 @@ class DiscussionDetailView(DetailView, FormMixin):
 
     def get_form_kwargs(self):
         return dict(super(DiscussionDetailView, self).get_form_kwargs(), **{
-            'discussion': self.get_object()
+            'discussion': self.object
         })
 
 
