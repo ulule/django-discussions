@@ -138,10 +138,7 @@ class DiscussionDetailView(DetailView, FormMixin):
         if not self.is_allowed(self.request.user):
             raise Http404
 
-        recipients = Recipient.objects.filter(discussion_id=self.object.pk,
-                                              user=self.request.user)
-
-        recipients.update(read_at=tznow(), status=Recipient.STATUS.read)
+        self.object.mark_as_read(self.request.user)
 
         recipients = self.object.recipients.all()
 

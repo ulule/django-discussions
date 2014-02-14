@@ -172,6 +172,18 @@ class Discussion(models.Model):
     def is_recipient(self, user):
         return user.pk in self.recipients.values_list('id', flat=True)
 
+    def mark_as_read(self, user=None):
+        from discussions.models import Recipient
+
+        recipients = self.recipients.all()
+
+        recipients = Recipient.objects.filter(discussion_id=self.pk)
+
+        if user:
+            recipients = recipients.filter(user_id=user.pk)
+
+        recipients.update(read_at=tznow(), status=Recipient.STATUS.read)
+
     def add_message(self, body, sender=None, commit=True):
         from . import Message
 
