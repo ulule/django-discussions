@@ -138,17 +138,15 @@ class DiscussionDetailView(DetailView, FormMixin):
         if not self.is_allowed(self.request.user):
             raise Http404
 
-        recipients = Recipient.objects.filter(discussion=self.object,
+        recipients = Recipient.objects.filter(discussion_id=self.object.pk,
                                               user=self.request.user)
 
-        now = tznow()
-        recipients.update(read_at=now, status=Recipient.STATUS.read)
+        recipients.update(read_at=tznow(), status=Recipient.STATUS.read)
 
-        users = self.object.recipients.select_related('user')
+        recipients = self.object.recipients.all()
 
         return dict(data, **{
-            'recipients': recipients,
-            'users': users,
+            'recipient_list': recipients,
             'form': self.get_form(self.get_form_class()),
             'message_list': self.get_messages(self.object)
         })
