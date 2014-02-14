@@ -75,7 +75,7 @@ class FoldersListView(ListView):
     template_name = 'discussions/folder/list.html'
     paginate_by = settings.PAGINATE_BY
     model = Folder
-    context_object_name = 'folders_list'
+    context_object_name = 'folder_list'
     paginator_class = Paginator
 
     def get_queryset(self):

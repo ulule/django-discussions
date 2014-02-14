@@ -169,6 +169,9 @@ class Discussion(models.Model):
             created = True
         return created
 
+    def is_recipient(self, user):
+        return user.pk in self.recipients.values_list('id', flat=True)
+
     def add_message(self, body, sender=None, commit=True):
         from . import Message
 
@@ -179,6 +182,9 @@ class Discussion(models.Model):
                     body=body,
                     discussion=self)
         m.save()
+
+        if not self.is_recipient(sender):
+            self.save_recipients([sender, ])
 
         self.recipient_set.exclude(user=sender).update(status=Recipient.STATUS.unread)
 
@@ -198,9 +204,7 @@ class Discussion(models.Model):
         if not user or not user.is_authenticated():
             return False
 
-        if (user.is_staff or user.is_superuser or
-            (user.id in [u['id']
-                         for u in self.recipients.values('id')])):
+        if (user.is_staff or user.is_superuser or self.is_recipient(user)):
             return True
 
         return user.has_perm('discussions.can_view')
