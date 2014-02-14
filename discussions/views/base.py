@@ -4,7 +4,7 @@ from django.views.generic.edit import FormMixin, CreateView, UpdateView
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
-from django.utils.translation import ungettext
+from django.utils.translation import ungettext, ugettext_lazy as _
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.http import Http404
 from django.utils.functional import cached_property
@@ -473,9 +473,9 @@ class FolderCreateView(CreateView):
         return redirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse('discussions_list', kwargs={
-            'folder_id': self.object.pk
-        })
+        message = _('You created successfully a new folder.')
+        messages.success(self.request, message, fail_silently=True)
+        return reverse('discussions_list')
 
 
 class FolderUpdateView(UpdateView):

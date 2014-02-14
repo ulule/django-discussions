@@ -51,6 +51,10 @@ class ReplyForm(forms.Form):
 
 
 class FolderForm(forms.ModelForm):
+    name = forms.CharField(label=_('Name'),
+                           widget=forms.TextInput({'placeholder': _('Write the folder\'s name')}),
+                           required=True)
+
     class Meta:
         exclude = ('user', 'discussions', 'created_at')
         model = Folder
