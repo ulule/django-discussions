@@ -311,6 +311,11 @@ class DiscussionMarkAsReadView(View, DiscussionBulkMixin):
             for recipient in recipients:
                 recipient.mark_as_read()
 
+        folder_id = self.kwargs.get('folder_id')
+
+        if folder_id:
+            return redirect(reverse('discussions_list', kwargs={'folder_id': folder_id}))
+
         return redirect(reverse('discussions_list'))
 
 
@@ -335,6 +340,11 @@ class DiscussionMarkAsUnreadView(View, DiscussionBulkMixin):
                           .exclude(status=Recipient.STATUS.unread))
             for recipient in recipients:
                 recipient.mark_as_unread()
+
+        folder_id = self.kwargs.get('folder_id')
+
+        if folder_id:
+            return redirect(reverse('discussions_list', kwargs={'folder_id': folder_id}))
 
         return redirect(reverse('discussions_list'))
 

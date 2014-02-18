@@ -57,11 +57,11 @@ urlpatterns = patterns(
         pre_filter(views.DiscussionMoveView.as_view()),
         name='discussions_move'),
 
-    url(r'^mark/read/$',
+    url(r'^mark/read/(?:(?P<folder_id>[\d]+))?$',
         pre_filter(views.DiscussionMarkAsReadView.as_view()),
         name='discussions_mark_as_read'),
 
-    url(r'^mark/unread/$',
+    url(r'^mark/unread/(?:(?P<folder_id>[\d]+))?$',
         pre_filter(views.DiscussionMarkAsUnreadView.as_view()),
         name='discussions_mark_as_unread'),
 
