@@ -145,7 +145,8 @@ class DiscussionDetailView(DetailView, FormMixin):
         return dict(data, **{
             'recipient_list': recipients,
             'form': self.get_form(self.get_form_class()),
-            'message_list': self.get_messages(self.object)
+            'message_list': self.get_messages(self.object),
+            'folder_list': Folder.objects.all()
         })
 
     def get_messages(self, discussion):
