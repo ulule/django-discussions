@@ -505,6 +505,8 @@ class FolderUpdateView(UpdateView):
         return redirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse('discussions_folder_update', kwargs={
+        message = _('You successfully updated this folder.')
+        messages.success(self.request, message, fail_silently=True)
+        return reverse('discussions_list', kwargs={
             'folder_id': self.object.pk
         })
