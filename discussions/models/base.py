@@ -65,6 +65,10 @@ class Recipient(models.Model):
         """ Returns a boolean whether the recipient has read the message """
         return self.status == self.STATUS.read
 
+    def is_unread(self):
+        """ Returns a boolean whether the recipient hasn't read the message """
+        return self.status == self.STATUS.unread
+
     def is_deleted(self):
         """ Returns a boolean whether the recipient has deleted the message """
         return self.status == self.STATUS.deleted

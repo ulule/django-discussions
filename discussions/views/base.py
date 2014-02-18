@@ -52,7 +52,7 @@ class DiscussionListView(ListView):
     def get_queryset(self):
         if self.folder:
             qs = (self.get_base_queryset()
-                  .filter(folder=self.folder))
+                  .filter(folder=self.folder).exclude(status=self.model.STATUS.deleted))
         else:
             qs = (self.get_base_queryset().exclude(status=self.model.STATUS.deleted)
                   .exclude(folder__isnull=False))
@@ -465,6 +465,11 @@ class DiscussionRemoveView(View, DiscussionBulkMixin):
 
         if redirect_to:
             return redirect(redirect_to)
+
+        folder_id = self.kwargs.get('folder_id')
+
+        if folder_id:
+            return redirect(reverse('discussions_list', kwargs={'folder_id': folder_id}))
 
         return redirect(reverse('discussions_list'))
 

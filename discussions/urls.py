@@ -16,7 +16,7 @@ urlpatterns = patterns(
         pre_filter(views.DiscussionDetailView.as_view()),
         name='discussions_detail'),
 
-    url(r'^remove/$',
+    url(r'^remove/(?:(?P<folder_id>[\d]+))?$',
         pre_filter(views.DiscussionRemoveView.as_view()),
         name='discussions_remove'),
 
@@ -41,7 +41,7 @@ urlpatterns = patterns(
         pre_filter(views.DiscussionReadView.as_view()),
         name='discussions_read'),
 
-    url(r'^filter/trash/$',
+    url(r'^filter/trash/(?:(?P<folder_id>[\d]+))?$',
         pre_filter(views.DiscussionDeletedView.as_view()),
         name='discussions_deleted'),
 
