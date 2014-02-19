@@ -73,7 +73,7 @@ urlpatterns = patterns(
         pre_filter(views.FolderUpdateView.as_view()),
         name='discussions_folder_update'),
 
-    url(r'^folder/remove$',
+    url(r'^folder/remove/(?P<folder_id>[\d]+)/$',
         pre_filter(views.FolderRemoveView.as_view()),
         name='discussions_folder_remove'),
 

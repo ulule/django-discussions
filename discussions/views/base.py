@@ -515,22 +515,26 @@ class FolderUpdateView(UpdateView):
         })
 
 
-class FolderRemoveView(View):
+class FolderRemoveView(DetailView):
     http_method_names = ['post']
+    model = Folder
+    pk_url_kwarg = 'folder_id'
+
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
-        folder = Folder.objects.filter(pk=self.request.POST.get('folder_id'),
-                                       user=self.request.user)
-        recipient_list = Recipient.objects.filter(folder=folder)
+
+        self.object = self.get_object()
+        self.get_context_data(object=self.object)
+
+        recipient_list = Recipient.objects.filter(folder=self.object)
 
         if recipient_list:
             for recipient in recipient_list:
                 recipient.folder = None
                 recipient.save()
 
-        folder.delete()
+        self.object.delete()
 
         return redirect(reverse('discussions_list'))
-
-
-
