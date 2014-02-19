@@ -495,7 +495,7 @@ class DiscussionsViewsTests(TestCase):
                                  'folder_id': folder.pk
                              }))
 
-    """def test_valid_folder_remove(self):
+    def test_valid_folder_remove(self):
         response = self.client.post(reverse('discussions_folder_remove'))
         self.assertEqual(response.status_code, 302)
 
@@ -518,4 +518,4 @@ class DiscussionsViewsTests(TestCase):
         self.assertRedirects(response,
                              reverse('discussions_list'))
 
-        self.assertEqual(get_object_or_404(Folder.objects.all(), pk=1).status_code, 404)"""
+        self.assertFalse(Folder.objects.filter(pk=1).exists())
