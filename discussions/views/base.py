@@ -513,3 +513,24 @@ class FolderUpdateView(UpdateView):
         return reverse('discussions_list', kwargs={
             'folder_id': self.object.pk
         })
+
+
+class FolderRemoveView(View):
+    http_method_names = ['post']
+
+    def post(self, request, *args, **kwargs):
+        folder = Folder.objects.filter(pk=self.request.POST.get('folder_id'),
+                                       user=self.request.user)
+        recipient_list = Recipient.objects.filter(folder=folder)
+
+        if recipient_list:
+            for recipient in recipient_list:
+                recipient.folder = None
+                recipient.save()
+
+        folder.delete()
+
+        return redirect(reverse('discussions_list'))
+
+
+

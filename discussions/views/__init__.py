@@ -24,10 +24,12 @@ DiscussionMarkAsUnreadView = load_class(settings.DISCUSSION_MARK_AS_UNREAD_VIEW)
 
 MessageComposeView = load_class(settings.MESSAGE_COMPOSE_VIEW)
 
-FoldersListView = load_class(settings.FOLDERS_LIST_VIEW)
+FoldersListView = load_class(settings.FOLDER_LIST_VIEW)
 
 FolderCreateView = load_class(settings.FOLDER_CREATE_VIEW)
 
 FolderUpdateView = load_class(settings.FOLDER_UPDATE_VIEW)
 
 DiscussionLeaveView = load_class(settings.DISCUSSION_LEAVE_VIEW)
+
+FolderRemoveView = load_class(settings.FOLDER_REMOVE_VIEW)
