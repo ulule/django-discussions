@@ -1,6 +1,6 @@
 from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.base import View
-from django.views.generic.edit import FormMixin, CreateView, UpdateView
+from django.views.generic.edit import FormMixin, CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
@@ -515,26 +515,13 @@ class FolderUpdateView(UpdateView):
         })
 
 
-class FolderRemoveView(DetailView):
+class FolderRemoveView(DeleteView):
     http_method_names = ['post']
     model = Folder
     pk_url_kwarg = 'folder_id'
 
+    def get_success_url(self):
+        return reverse('discussions_list')
+
     def get_queryset(self):
         return self.model.objects.filter(user=self.request.user)
-
-    def post(self, request, *args, **kwargs):
-
-        self.object = self.get_object()
-        self.get_context_data(object=self.object)
-
-        recipient_list = Recipient.objects.filter(folder=self.object)
-
-        if recipient_list:
-            for recipient in recipient_list:
-                recipient.folder = None
-                recipient.save()
-
-        self.object.delete()
-
-        return redirect(reverse('discussions_list'))

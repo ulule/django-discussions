@@ -34,7 +34,8 @@ class Recipient(models.Model):
     folder = models.ForeignKey(get_model_string('Folder'),
                                verbose_name=_('folder'),
                                null=True, blank=True,
-                               related_name='recipients')
+                               related_name='recipients',
+                               on_delete=models.SET_NULL)
 
     read_at = models.DateTimeField(_('read at'),
                                    null=True,
