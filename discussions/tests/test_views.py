@@ -495,22 +495,76 @@ class DiscussionsViewsTests(TestCase):
                                  'folder_id': folder.pk
                              }))
 
-    def test_valid_folder_remove(self):
-        response = self.client.post(reverse('discussions_folder_remove'))
+    def test_discussion_move_to_folder(self):
+        response = self.client.post(reverse('discussions_move',
+                                            kwargs={'folder_id': 1}),
+                                    data={'discussion_ids': [2]})
         self.assertEqual(response.status_code, 302)
 
         # Sign in
         self.client.login(username='thoas', password='$ecret')
 
         # Test that only posts are allowed
-        response = self.client.get(reverse('discussions_folder_remove'))
+        response = self.client.get(reverse('discussions_move',
+                                           kwargs={'folder_id': 1}),
+                                   data={'discussion_ids': [2]})
+        self.assertEqual(response.status_code, 405)
+
+        response = self.client.post(reverse('discussions_move',
+                                            kwargs={'folder_id': 1}),
+                                    data={'discussion_ids': [2]})
+        recipient = Recipient.objects.get(pk=2)
+
+        folder = Folder.objects.get(pk=1)
+
+        self.assertEqual(recipient.folder, folder)
+
+    def test_discussion_move_to_mailbox(self):
+        response = self.client.post(reverse('discussions_move'),
+                                    data={'discussion_ids': [3]})
+        self.assertEqual(response.status_code, 302)
+
+        # Sign in
+        self.client.login(username='thoas', password='$ecret')
+
+        # Test that only posts are allowed
+        response = self.client.get(reverse('discussions_move'),
+                                   data={'discussion_ids': [3]})
+        self.assertEqual(response.status_code, 405)
+
+        response = self.client.post(reverse('discussions_move'),
+                                    data={'discussion_ids': [3]})
+        recipient = Recipient.objects.get(pk=3)
+
+        self.assertEqual(recipient.folder, None)
+
+    def test_folder_remove_pk_does_not_exist(self):
+        # Sign in
+        self.client.login(username='thoas', password='$ecret')
+
+        response = self.client.post(reverse('discussions_folder_remove',
+                                    kwargs={'folder_id': 35}))
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_valid_folder_remove(self):
+        response = self.client.post(reverse('discussions_folder_remove',
+                                            kwargs={'folder_id': 1}))
+        self.assertEqual(response.status_code, 302)
+
+        # Sign in
+        self.client.login(username='thoas', password='$ecret')
+
+        # Test that only posts are allowed
+        response = self.client.get(reverse('discussions_folder_remove',
+                                           kwargs={'folder_id': 1}))
         self.assertEqual(response.status_code, 405)
 
         folder = Folder.objects.get(pk=1)
         related_recipient = Recipient.objects.filter(folder=folder)
 
-        response = self.client.post(reverse('discussions_folder_remove'),
-                                    data={'folder_id': [1]})
+        response = self.client.post(reverse('discussions_folder_remove',
+                                            kwargs={'folder_id': 1}))
 
         for recipient in related_recipient:
             self.assertEqual(recipient.folder, None)
