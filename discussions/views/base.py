@@ -274,8 +274,11 @@ class DiscussionMoveView(DetailView, DiscussionBulkMixin):
                 List of discussion id's that should be moved.
         """
 
-        self.object = self.get_object()
-        self.get_context_data(object=self.object)
+        self.object = None
+
+        if self.kwargs.get('folder_id') != "-1":
+            self.object = self.get_object()
+            self.get_context_data(object=self.object)
 
         discussion_ids = self.request.POST.getlist('discussion_ids')
 
