@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 from ..forms import ComposeForm, FolderForm
 from ..models import Message, Recipient, Discussion, Folder
 from ..compat import User
@@ -456,9 +457,7 @@ class DiscussionsViewsTests(TestCase):
         self.assertEqual(folder.name, data['name'])
 
         self.assertRedirects(response,
-                             reverse('discussions_list', kwargs={
-                                 'folder_id': folder.pk
-                             }))
+                             reverse('discussions_list'))
 
     def test_folder_update(self):
         folder = Folder.objects.get(pk=1)
@@ -492,6 +491,31 @@ class DiscussionsViewsTests(TestCase):
         self.assertEqual(folder.name, data['name'])
 
         self.assertRedirects(response,
-                             reverse('discussions_folder_update', kwargs={
+                             reverse('discussions_list', kwargs={
                                  'folder_id': folder.pk
                              }))
+
+    """def test_valid_folder_remove(self):
+        response = self.client.post(reverse('discussions_folder_remove'))
+        self.assertEqual(response.status_code, 302)
+
+        # Sign in
+        self.client.login(username='thoas', password='$ecret')
+
+        # Test that only posts are allowed
+        response = self.client.get(reverse('discussions_folder_remove'))
+        self.assertEqual(response.status_code, 405)
+
+        folder = Folder.objects.get(pk=1)
+        related_recipient = Recipient.objects.filter(folder=folder)
+
+        response = self.client.post(reverse('discussions_folder_remove'),
+                                    data={'folder_id': [1]})
+
+        for recipient in related_recipient:
+            self.assertEqual(recipient.folder, None)
+
+        self.assertRedirects(response,
+                             reverse('discussions_list'))
+
+        self.assertEqual(get_object_or_404(Folder.objects.all(), pk=1).status_code, 404)"""

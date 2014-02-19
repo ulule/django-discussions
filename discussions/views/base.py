@@ -276,7 +276,7 @@ class DiscussionMoveView(DetailView, DiscussionBulkMixin):
 
         self.object = None
 
-        if self.kwargs.get('folder_id') != "-1":
+        if self.kwargs.get('folder_id'):
             self.object = self.get_object()
             self.get_context_data(object=self.object)
 

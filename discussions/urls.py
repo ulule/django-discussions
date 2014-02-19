@@ -53,7 +53,7 @@ urlpatterns = patterns(
         pre_filter(views.FoldersListView.as_view()),
         name='discussions_folders_list'),
 
-    url(r'^move/(?P<folder_id>[-?\d]+)$',
+    url(r'^move/(?:(?P<folder_id>[\d]+))?$',
         pre_filter(views.DiscussionMoveView.as_view()),
         name='discussions_move'),
 
