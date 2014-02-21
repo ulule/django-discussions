@@ -382,13 +382,13 @@ class DiscussionLeaveView(View, DiscussionBulkMixin):
                 result = discussion.delete_recipient(self.request.user)
 
                 if result:
-                    message = ungettext('You left the discussion successfully.',
-                                        'You left the discussions successfully.',
+                    message = ungettext('You have left this discussion successfully',
+                                        'You have left these discussions successfully',
                                         len(discussion_ids))
                     messages.success(self.request, message, fail_silently=True)
                 else:
-                    message = ungettext('You created this discussion, you cannot leave it.',
-                                        'You created this discussions, you cannot leave them.',
+                    message = ungettext('You have created this discussion, you cannot leave it',
+                                        'You have created these discussions, you cannot leave them',
                                         len(discussion_ids))
                     messages.error(self.request, message, fail_silently=True)
 
@@ -456,12 +456,12 @@ class DiscussionRemoveView(View, DiscussionBulkMixin):
             # Send messages
             if (len(changed_message_list) > 0):
                 if undo:
-                    message = ungettext('Discussion is succesfully restored.',
-                                        'Discussions are succesfully restored.',
+                    message = ungettext('This discussion has been succesfully restored',
+                                        'These discussions have been succesfully restored',
                                         len(changed_message_list))
                 else:
-                    message = ungettext('Discussion is successfully removed.',
-                                        'Discussions are successfully removed.',
+                    message = ungettext('This discussion has been successfully removed',
+                                        'These discussions have been successfully removed',
                                         len(changed_message_list))
 
                 messages.success(self.request, message, fail_silently=True)
@@ -487,7 +487,7 @@ class FolderCreateView(CreateView):
         return redirect(self.get_success_url())
 
     def get_success_url(self):
-        message = _('You created successfully a new folder.')
+        message = _('Your folder has been successfully created')
         messages.success(self.request, message, fail_silently=True)
         return reverse('discussions_list')
 
@@ -508,7 +508,7 @@ class FolderUpdateView(UpdateView):
         return redirect(self.get_success_url())
 
     def get_success_url(self):
-        message = _('You successfully updated this folder.')
+        message = _('You have successfully updated this folder')
         messages.success(self.request, message, fail_silently=True)
         return reverse('discussions_list', kwargs={
             'folder_id': self.object.pk
