@@ -1,0 +1,6 @@
+include README.rst
+include MANIFEST.in
+include Makefile
+recursive-include discussions/templates *.html *.txt
+recursive-include discussions/locale *
+
