@@ -14,7 +14,7 @@ from ..forms import ComposeForm, ReplyForm, FolderForm
 from ..helpers import lookup_discussions, lookup_profiles
 from .. import settings
 from ..compat import User
-from ..utils import tznow, load_class
+from ..utils import tznow
 
 from pure_pagination import Paginator
 
@@ -84,39 +84,6 @@ class FoldersListView(ListView):
               .select_related('user'))
 
         return qs
-
-
-class DiscussionSentView(load_class(settings.DISCUSSION_LIST_VIEW)):
-    template_name = 'discussions/sent.html'
-
-    def get_queryset(self):
-        return (self.get_base_queryset()
-                .filter(discussion__sender=self.user, folder=self.folder)
-                .exclude(status=self.model.STATUS.deleted))
-
-
-class DiscussionUnreadView(load_class(settings.DISCUSSION_LIST_VIEW)):
-    template_name = 'discussions/unread.html'
-
-    def get_queryset(self):
-        return (self.get_base_queryset()
-                .filter(status=self.model.STATUS.unread, folder=self.folder))
-
-
-class DiscussionReadView(load_class(settings.DISCUSSION_LIST_VIEW)):
-    template_name = 'discussions/read.html'
-
-    def get_queryset(self):
-        return (self.get_base_queryset()
-                .filter(status=self.model.STATUS.read, folder=self.folder))
-
-
-class DiscussionDeletedView(load_class(settings.DISCUSSION_LIST_VIEW)):
-    template_name = 'discussions/deleted.html'
-
-    def get_queryset(self):
-        return (self.get_base_queryset()
-                .filter(status=self.model.STATUS.deleted, folder=self.folder))
 
 
 class DiscussionDetailView(DetailView, FormMixin):

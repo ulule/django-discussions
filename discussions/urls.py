@@ -30,19 +30,19 @@ urlpatterns = patterns(
         name='discussions_list'),
 
     url(r'^filter/sent/(?:(?P<folder_id>[\d]+))?$',
-        pre_filter(views.DiscussionSentView.as_view()),
+        pre_filter(views.status.DiscussionSentView.as_view()),
         name='discussions_sent'),
 
     url(r'^filter/unread/(?:(?P<folder_id>[\d]+))?$',
-        pre_filter(views.DiscussionUnreadView.as_view()),
+        pre_filter(views.status.DiscussionUnreadView.as_view()),
         name='discussions_unread'),
 
     url(r'^filter/read/(?:(?P<folder_id>[\d]+))?$',
-        pre_filter(views.DiscussionReadView.as_view()),
+        pre_filter(views.status.DiscussionReadView.as_view()),
         name='discussions_read'),
 
     url(r'^filter/trash/(?:(?P<folder_id>[\d]+))?$',
-        pre_filter(views.DiscussionDeletedView.as_view()),
+        pre_filter(views.status.DiscussionDeletedView.as_view()),
         name='discussions_deleted'),
 
     url(r'^leave/$',

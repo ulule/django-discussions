@@ -21,16 +21,16 @@ DISCUSSION_LIST_VIEW = getattr(settings,
                                'discussions.views.base.DiscussionListView')
 DISCUSSION_SENT_VIEW = getattr(settings,
                                'DISCUSSIONS_DISCUSSION_SENT_VIEW',
-                               'discussions.views.base.DiscussionSentView')
+                               'discussions.views.status.DiscussionSentView')
 DISCUSSION_DELETED_VIEW = getattr(settings,
                                   'DISCUSSIONS_DISCUSSION_DELETED_VIEW',
-                                  'discussions.views.base.DiscussionDeletedView')
+                                  'discussions.views.status.DiscussionDeletedView')
 DISCUSSION_READ_VIEW = getattr(settings,
                                'DISCUSSIONS_DISCUSSION_READ_VIEW',
-                               'discussions.views.base.DiscussionReadView')
+                               'discussions.views.status.DiscussionReadView')
 DISCUSSION_UNREAD_VIEW = getattr(settings,
                                  'DISCUSSIONS_DISCUSSION_UNREAD_VIEW',
-                                 'discussions.views.base.DiscussionUnreadView')
+                                 'discussions.views.status.DiscussionUnreadView')
 DISCUSSION_DETAIL_VIEW = getattr(settings,
                                  'DISCUSSIONS_DISCUSSION_DETAIL_VIEW',
                                  'discussions.views.base.DiscussionDetailView')
