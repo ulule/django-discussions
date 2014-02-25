@@ -278,7 +278,7 @@ class Folder(models.Model):
     created_at = models.DateTimeField(_('created at'),
                                       auto_now_add=True)
 
-    user = models.ForeignKey(AUTH_USER_MODEL)
+    user = models.ForeignKey(AUTH_USER_MODEL, related_name='discussion_folders')
 
     class Meta:
         ordering = ['-created_at']

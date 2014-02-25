@@ -65,7 +65,6 @@ class DiscussionListView(ListView):
         lookup_discussions(context[self.context_object_name])
         lookup_profiles(context[self.context_object_name])
 
-        context['folder_list'] = Folder.objects.all()
         context['folder'] = self.folder
 
         return context
@@ -113,7 +112,6 @@ class DiscussionDetailView(DetailView, FormMixin):
             'recipient_list': recipients,
             'form': self.get_form(self.get_form_class()),
             'message_list': self.get_messages(self.object),
-            'folder_list': Folder.objects.all()
         })
 
     def get_messages(self, discussion):
