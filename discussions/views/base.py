@@ -1,10 +1,12 @@
+from __future__ import unicode_literals
+
 from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin, CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
-from django.utils.translation import ungettext, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ungettext
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.http import Http404
 from django.utils.functional import cached_property
@@ -347,15 +349,13 @@ class DiscussionLeaveView(View, DiscussionBulkMixin):
                 result = discussion.delete_recipient(self.request.user)
 
                 if result:
-                    message = ungettext('You have left this discussion successfully',
-                                        'You have left these discussions successfully',
-                                        len(discussion_ids))
-                    messages.success(self.request, message, fail_silently=True)
+                    messages.success(self.request,
+                                     _('You have successfully left the discussion "%s"') % discussion,
+                                     fail_silently=True)
                 else:
-                    message = ungettext('You have created this discussion, you cannot leave it',
-                                        'You have created these discussions, you cannot leave them',
-                                        len(discussion_ids))
-                    messages.error(self.request, message, fail_silently=True)
+                    messages.error(self.request,
+                                   _('You have created the discussion "%s", you cannot leave it') % discussion,
+                                   fail_silently=True)
 
         if redirect_to:
             return redirect(redirect_to)

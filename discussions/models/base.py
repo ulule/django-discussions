@@ -143,7 +143,7 @@ class Discussion(models.Model):
         abstract = True
 
     def __str__(self):
-        return 'Discussion opened by %s' % self.sender
+        return self.subject
 
     def update_counters(self, commit=True):
         from ..compat import update_fields
@@ -227,11 +227,13 @@ class Discussion(models.Model):
         return user.has_perm('discussions.can_view')
 
     def delete_recipient(self, user):
-        if user.id == self.sender_id:
+        if user.pk == self.sender_id:
             return False
 
-        return self.recipients.through.objects.filter(discussion=self.pk,
-                                                      user=user.pk).delete()
+        self.recipients.through.objects.filter(discussion=self.pk,
+                                               user=user.pk).delete()
+
+        return True
 
 
 @python_2_unicode_compatible
