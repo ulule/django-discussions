@@ -206,6 +206,7 @@ class MessageComposeView(FormView):
     def post(self, request, *args, **kwargs):
         if self.submit_key in request.POST:
             return super(MessageComposeView, self).post(request, *args, **kwargs)
+
         return self.get(request, *args, **kwargs)
 
 

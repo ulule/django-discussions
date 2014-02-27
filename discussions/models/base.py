@@ -120,6 +120,7 @@ class Discussion(models.Model):
     latest_message = models.ForeignKey(get_model_string('Message'),
                                        null=True,
                                        blank=True,
+                                       on_delete=models.SET_NULL,
                                        related_name='latest_discussions')
 
     subject = models.CharField(max_length=255)
