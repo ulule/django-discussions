@@ -1,6 +1,6 @@
-from . import base
+from .base import Folder as BaseFolder
 
 
-class Folder(base.Folder):
-    class Meta(base.Folder.Meta):
+class Folder(BaseFolder):
+    class Meta(BaseFolder.Meta):
         abstract = False
