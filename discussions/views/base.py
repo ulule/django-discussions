@@ -188,8 +188,8 @@ class MessageComposeView(FormView):
         return redirect(self.get_success_url(form))
 
     def get_success_url(self, form):
-        requested_redirect = self.request.REQUEST.get(REDIRECT_FIELD_NAME,
-                                                      False)
+        requested_redirect = self.request.POST.get(REDIRECT_FIELD_NAME,
+                                                   False)
 
         # Redirect mechanism
         redirect_to = reverse('discussions_list')
@@ -341,7 +341,7 @@ class DiscussionLeaveView(View, DiscussionBulkMixin):
         """
 
         discussion_ids = self.request.POST.getlist('discussion_ids')
-        redirect_to = self.request.REQUEST.get('next', False)
+        redirect_to = self.request.POST.get('next', False)
 
         if discussion_ids:
             for pk in self.valid_ids(discussion_ids):
@@ -387,7 +387,7 @@ class DiscussionRemoveView(View, DiscussionBulkMixin):
 
         """
         discussion_ids = self.request.POST.getlist('discussion_ids')
-        redirect_to = self.request.REQUEST.get('next', False)
+        redirect_to = self.request.POST.get('next', False)
         undo = self.kwargs.get('undo', False)
 
         if discussion_ids:
