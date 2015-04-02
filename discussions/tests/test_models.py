@@ -11,8 +11,8 @@ class MessageModelTests(TestCase):
         """ Test the human representation of a message """
         message = Message.objects.get(pk=1)
         truncated_body = truncate_words(message.body, 10)
-        self.failUnlessEqual(message.__unicode__(),
-                             truncated_body)
+        self.assertEqual(message.__unicode__(),
+                         truncated_body)
 
 
 class MessageRecipientModelTest(TestCase):
@@ -24,8 +24,8 @@ class MessageRecipientModelTest(TestCase):
 
         valid_unicode = '%s' % (recipient.discussion)
 
-        self.failUnlessEqual(recipient.__unicode__(),
-                             valid_unicode)
+        self.assertEqual(recipient.__unicode__(),
+                         valid_unicode)
 
     def test_new(self):
         """ Test if the message that is new is correct """

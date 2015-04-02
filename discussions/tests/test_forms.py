@@ -29,7 +29,7 @@ class ComposeFormTests(TestCase):
 
         for invalid_dict in invalid_data_dicts:
             form = ComposeForm(data=invalid_dict['data'])
-            self.failIf(form.is_valid())
+            assert form.is_valid() is False
             self.assertEqual(form.errors[invalid_dict['error'][0]],
                              invalid_dict['error'][1])
 
@@ -41,27 +41,28 @@ class ComposeFormTests(TestCase):
 
         form = ComposeForm(data=valid_data)
 
-        self.failUnless(form.is_valid())
+        assert form.is_valid() is not False
 
         # Save the form.
         sender = User.objects.get(username='oleiade')
         discussion = form.save(sender)
 
         # Check if the values are set correctly
-        self.failUnlessEqual(discussion.subject, valid_data['subject'])
+        self.assertEqual(discussion.subject, valid_data['subject'])
 
         self.assertEqual(discussion.messages.count(), 1)
 
-        self.failUnlessEqual(discussion.sender, sender)
-        self.failUnless(discussion.created_at)
+        self.assertEqual(discussion.sender, sender)
+
+        assert discussion.created_at is not None
 
         message = discussion.messages.all()[0]
 
         self.assertEqual(message.body, valid_data['body'])
 
         # Check recipients
-        self.failUnlessEqual(discussion.recipients.all()[0].username, 'ampelmann')
-        self.failUnlessEqual(discussion.recipients.all()[1].username, 'thoas')
+        self.assertEqual(discussion.recipients.all()[0].username, 'ampelmann')
+        self.assertEqual(discussion.recipients.all()[1].username, 'thoas')
 
 
 class ReplyFormTests(TestCase):
@@ -80,7 +81,7 @@ class ReplyFormTests(TestCase):
 
         message = form.save(sender)
 
-        self.failUnlessEqual(message.body, valid_data['body'])
+        self.assertEqual(message.body, valid_data['body'])
 
         self.assertEqual(discussion.messages.count(), 2)
 
@@ -101,4 +102,4 @@ class FolderFormTests(TestCase):
 
         folder = form.save(sender)
 
-        self.failUnlessEqual(folder.name, valid_data['name'])
+        self.assertEqual(folder.name, valid_data['name'])
