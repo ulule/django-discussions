@@ -15,6 +15,7 @@ from model_utils import Choices
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 
+@python_2_unicode_compatible
 class Recipient(models.Model):
     """
     Intermediate model to allow per recipient marking as
@@ -58,7 +59,7 @@ class Recipient(models.Model):
         app_label = 'discussions'
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         return (_('%(discussion)s')
                 % {'discussion': self.discussion})
 
