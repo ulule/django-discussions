@@ -40,10 +40,10 @@ class CommaSeperatedFieldTests(TestCase):
              'error': ('users', [u'The following usernames are incorrect: foo.'])},
             # Multiple invalid usernames
             {'data': {'users': 'foo, bar'},
-             'error': ('users', [u'The following usernames are incorrect: foo, bar.'])},
+             'error': ('users', [u'The following usernames are incorrect: bar, foo.'])},
             # Valid and invalid
             {'data': {'users': 'foo, thoas, bar'},
-             'error': ('users', [u'The following usernames are incorrect: foo, bar.'])},
+             'error': ('users', [u'The following usernames are incorrect: bar, foo.'])},
             # Extra whitespace
             {'data': {'users': 'foo,    thoas  '},
              'error': ('users', [u'The following usernames are incorrect: foo.'])},
