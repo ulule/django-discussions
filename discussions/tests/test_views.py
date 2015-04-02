@@ -27,7 +27,7 @@ class DiscussionsViewsTests(TestCase):
         self.assertTemplateUsed(response,
                                 'discussions/form.html')
 
-        self.failUnless(isinstance(response.context['form'],
+        self.assertTrue(isinstance(response.context['form'],
                                    ComposeForm))
 
     def test_compose_post(self):
@@ -122,7 +122,8 @@ class DiscussionsViewsTests(TestCase):
         ampelmann = User.objects.get(pk=2)
         mr = Recipient.objects.get(discussion=Discussion.objects.get(pk=1),
                                    user=ampelmann)
-        self.failUnless(mr.read_at)
+
+        assert mr.read_at is not None
 
     def test_discussion_detail_new_message(self):
         self.client.login(username='ampelmann', password='$ecret')
@@ -290,7 +291,7 @@ class DiscussionsViewsTests(TestCase):
         self.assertRedirects(response,
                              reverse('discussions_list'))
         d = Discussion.objects.get(pk=1)
-        self.failUnless(d.sender_deleted_at)
+        assert d.sender_deleted_at is not None
 
         self.client.login(username='ampelmann', password='$ecret')
         response = self.client.post(reverse('discussions_remove'),
@@ -301,7 +302,8 @@ class DiscussionsViewsTests(TestCase):
         ampelmann = User.objects.get(username='ampelmann')
         dr = d.recipient_set.get(user=ampelmann,
                                  discussion=d)
-        self.failUnless(dr.deleted_at)
+
+        assert dr.deleted_at is not None
 
     def test_invalid_discussion_remove(self):
         """ ``POST`` to remove an invalid discussion """
@@ -440,7 +442,7 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-        self.failUnless(isinstance(response.context['form'], FolderForm))
+        self.assertTrue(isinstance(response.context['form'], FolderForm))
         self.assertTemplateUsed(response,
                                 'discussions/folder/create.html')
 
@@ -474,7 +476,7 @@ class DiscussionsViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-        self.failUnless(isinstance(response.context['form'], FolderForm))
+        self.assertTrue(isinstance(response.context['form'], FolderForm))
         self.assertTemplateUsed(response,
                                 'discussions/folder/update.html')
 

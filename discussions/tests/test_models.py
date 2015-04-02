@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.test import TestCase
 
 from ..models import Message, Recipient
@@ -24,7 +26,7 @@ class MessageRecipientModelTest(TestCase):
 
         valid_unicode = '%s' % (recipient.discussion)
 
-        self.assertEqual(recipient.__unicode__(),
+        self.assertEqual('%s' % recipient,
                          valid_unicode)
 
     def test_new(self):

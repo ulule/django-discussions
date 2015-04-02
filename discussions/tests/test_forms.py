@@ -75,7 +75,7 @@ class ReplyFormTests(TestCase):
 
         form = ReplyForm(discussion=discussion, data=valid_data)
 
-        self.failUnless(form.is_valid())
+        assert form.is_valid() is True
 
         sender = User.objects.get(username='oleiade')
 
@@ -96,7 +96,7 @@ class FolderFormTests(TestCase):
 
         form = FolderForm(data=valid_data)
 
-        self.failUnless(form.is_valid())
+        assert form.is_valid() is True
 
         sender = User.objects.get(username='oleiade')
 
