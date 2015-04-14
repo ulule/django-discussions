@@ -18,7 +18,7 @@ from .. import settings
 from ..compat import User
 from ..utils import tznow
 
-from pure_pagination import Paginator
+from pure_pagination.paginator import Paginator
 
 
 class DiscussionListView(ListView):
