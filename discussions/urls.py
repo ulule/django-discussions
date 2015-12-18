@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from . import views, settings
 from .utils import load_class
@@ -6,8 +6,7 @@ from .utils import load_class
 pre_filter = load_class(settings.PRE_FILTER)
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^compose(?:\/(?P<recipients>[\w\-\_\+]+))?/$',
         pre_filter(views.MessageComposeView.as_view()),
         name='discussions_compose'),
@@ -76,5 +75,4 @@ urlpatterns = patterns(
     url(r'^folder/remove/(?P<folder_id>[\d]+)/$',
         pre_filter(views.FolderRemoveView.as_view()),
         name='discussions_folder_remove'),
-
-)
+]

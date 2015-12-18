@@ -1,23 +1,13 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import six
 
 from collections import defaultdict
 
+from importlib import import_module
+
 from django.core import exceptions
 from django.conf import settings
-try:
-    from importlib import import_module
-except ImportError:
-    from django.utils.importlib import import_module
-from django.db.models import get_model
-
-try:
-    from django.utils.timezone import timedelta
-    from django.utils.timezone import now as tznow
-except ImportError:
-    import datetime
-    from datetime import timedelta  # NOQA
-    tznow = datetime.datetime.now  # NOQA
+from django.apps import apps
 
 from . import settings as defaults
 
@@ -92,7 +82,7 @@ def get_profile_model():
     if (not hasattr(settings, 'AUTH_PROFILE_MODULE')) or (not settings.AUTH_PROFILE_MODULE):
         return None
 
-    return get_model(*settings.AUTH_PROFILE_MODULE.split('.'))
+    return apps.get_model(*settings.AUTH_PROFILE_MODULE.split('.'))
 
 
 def queryset_to_dict(qs, key='pk', singular=True):

@@ -7,7 +7,9 @@ from django.utils.encoding import python_2_unicode_compatible
 from discussions.managers import (DiscussionManager, RecipientManager,
                                   MessageManager)
 
-from ..utils import tznow, get_model_string
+from django.utils.timezone import now as tznow
+
+from ..utils import get_model_string
 
 from model_utils import Choices
 
@@ -148,13 +150,11 @@ class Discussion(models.Model):
         return self.subject
 
     def update_counters(self, commit=True):
-        from ..compat import update_fields
-
         self.recipients_count = self.recipients.count()
         self.messages_count = self.messages.count()
 
         if commit:
-            update_fields(self, fields=('recipients_count', 'messages_count'))
+            self.save(update_fields=('recipients_count', 'messages_count'))
 
     def save_recipients(self, to_user_list):
         from . import Recipient

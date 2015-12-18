@@ -10,13 +10,13 @@ from django.utils.translation import ugettext_lazy as _, ungettext
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.http import Http404
 from django.utils.functional import cached_property
+from django.utils.timezone import now as tznow
 
 from ..models import Discussion, Folder, Recipient
 from ..forms import ComposeForm, ReplyForm, FolderForm
 from ..helpers import lookup_discussions, lookup_profiles
 from .. import settings
 from ..compat import User
-from ..utils import tznow
 
 from pure_pagination.paginator import Paginator
 

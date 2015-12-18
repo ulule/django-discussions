@@ -1,16 +1,7 @@
 import django
 
+from django.contrib.auth import get_user_model
 
-# Django 1.5+ compatibility
-if django.VERSION >= (1, 5):
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
-
-    update_fields = lambda instance, fields: instance.save(update_fields=fields)
-else:
-    from django.contrib.auth.models import User
-
-    update_fields = lambda instance, fields: instance.save()
 
 # Django 1.6+ compatibility
 if django.VERSION >= (1, 4):
@@ -21,5 +12,7 @@ if django.VERSION >= (1, 4):
         return Truncator(s).words(num, truncate=truncate)
 else:
     from django.utils.text import truncate_words
+
+User = get_user_model()
 
 __all__ = ['User', 'truncate_words']
