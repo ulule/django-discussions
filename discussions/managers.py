@@ -46,16 +46,16 @@ class RecipientManager(models.Manager):
     """ Manager for the :class:`MessageRecipient` model. """
 
     def contribute_to_class(self, cls, name):
-        signals.post_save.connect(self.post_save, sender=cls)
-        signals.post_delete.connect(self.post_delete, sender=cls)
+        signals.post_save.connect(self.handle_post_save, sender=cls)
+        signals.post_delete.connect(self.handle_post_delete, sender=cls)
         return super(RecipientManager, self).contribute_to_class(cls, name)
 
-    def post_save(self, instance, **kwargs):
+    def handle_post_save(self, instance, **kwargs):
         if kwargs.get('created', False):
             discussion = instance.discussion
             discussion.update_counters()
 
-    def post_delete(self, instance, **kwargs):
+    def handle_post_delete(self, instance, **kwargs):
         try:
             instance.discussion.update_counters()
         except ObjectDoesNotExist:

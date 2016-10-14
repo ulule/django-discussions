@@ -29,6 +29,13 @@ class MessageRecipientModelTest(TestCase):
         self.assertEqual('%s' % recipient,
                          valid_unicode)
 
+    def test_recipients_count(self):
+        recipient = Recipient.objects.get(pk=1)
+
+        discussion = recipient.discussion
+
+        assert discussion.recipients_count == discussion.recipients.count()
+
     def test_new(self):
         """ Test if the message that is new is correct """
         new_message = Recipient.objects.get(pk=1)
