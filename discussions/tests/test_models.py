@@ -7,27 +7,25 @@ from ..compat import truncate_words
 
 
 class MessageModelTests(TestCase):
-    fixtures = ['users.json', 'messages.json']
+    fixtures = ["users.json", "messages.json"]
 
     def test_string_formatting(self):
         """ Test the human representation of a message """
         message = Message.objects.get(pk=1)
         truncated_body = truncate_words(message.body, 10)
-        self.assertEqual('%s' % message,
-                         truncated_body)
+        self.assertEqual("%s" % message, truncated_body)
 
 
 class MessageRecipientModelTest(TestCase):
-    fixtures = ['users.json', 'messages.json']
+    fixtures = ["users.json", "messages.json"]
 
     def test_string_formatting(self):
         """ Test the human representation of a recipient """
         recipient = Recipient.objects.get(pk=1)
 
-        valid_unicode = '%s' % recipient.discussion
+        valid_unicode = "%s" % recipient.discussion
 
-        self.assertEqual('%s' % recipient,
-                         valid_unicode)
+        self.assertEqual("%s" % recipient, valid_unicode)
 
     def test_recipients_count(self):
         recipient = Recipient.objects.get(pk=1)

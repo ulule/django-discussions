@@ -23,11 +23,10 @@ class DiscussionManager(models.Manager):
             A Discussion :class:`Discussion`
 
         """
-        discussion = self.model(sender=sender,
-                                subject=subject)
+        discussion = self.model(sender=sender, subject=subject)
         discussion.save()
 
-        discussion.save_recipients(list(to_user_list) + [sender, ])
+        discussion.save_recipients(list(to_user_list) + [sender])
 
         discussion.add_message(body)
 
@@ -35,10 +34,14 @@ class DiscussionManager(models.Manager):
 
     def get_conversation_between(self, from_user, to_user):
         """ Returns a conversation between two users """
-        messages = self.filter(Q(sender=from_user, recipients=to_user,
-                                 sender_deleted_at__isnull=True) |
-                               Q(sender=to_user, recipients=from_user,
-                                 messagerecipient__deleted_at__isnull=True))
+        messages = self.filter(
+            Q(sender=from_user, recipients=to_user, sender_deleted_at__isnull=True)
+            | Q(
+                sender=to_user,
+                recipients=from_user,
+                messagerecipient__deleted_at__isnull=True,
+            )
+        )
         return messages
 
 
@@ -51,7 +54,7 @@ class RecipientManager(models.Manager):
         return super(RecipientManager, self).contribute_to_class(cls, name)
 
     def handle_post_save(self, instance, **kwargs):
-        if kwargs.get('created', False):
+        if kwargs.get("created", False):
             discussion = instance.discussion
             discussion.update_counters()
 
@@ -72,8 +75,7 @@ class RecipientManager(models.Manager):
             An integer with the amount of unread messages.
 
         """
-        unread_total = self.filter(user=user,
-                                   status=self.model.STATUS.unread).count()
+        unread_total = self.filter(user=user, status=self.model.STATUS.unread).count()
 
         return unread_total
 
@@ -91,9 +93,9 @@ class RecipientManager(models.Manager):
             An integer with the amount of unread messages.
 
         """
-        unread_total = self.filter(discussion__sender=from_user,
-                                   user=to_user,
-                                   status=self.model.STATUS.unread).count()
+        unread_total = self.filter(
+            discussion__sender=from_user, user=to_user, status=self.model.STATUS.unread
+        ).count()
 
         return unread_total
 
@@ -105,7 +107,7 @@ class MessageManager(models.Manager):
         return super(MessageManager, self).contribute_to_class(cls, name)
 
     def post_save(self, instance, **kwargs):
-        if kwargs.get('created', False):
+        if kwargs.get("created", False):
             discussion = instance.discussion
             discussion.latest_message = instance
             discussion.update_counters()

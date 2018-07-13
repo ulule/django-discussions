@@ -6,13 +6,13 @@ from .compat import User
 
 
 class CommaSeparatedUserInput(widgets.Input):
-    input_type = 'text'
+    input_type = "text"
 
     def render(self, name, value, attrs=None):
         if value is None:
-            value = ''
+            value = ""
         elif isinstance(value, (list, tuple)):
-            value = (', '.join([user.username for user in value]))
+            value = ", ".join([user.username for user in value])
         return super(CommaSeparatedUserInput, self).render(name, value, attrs)
 
 
@@ -29,17 +29,18 @@ class CommaSeparatedUserField(forms.Field):
         A list of :class:`User`.
 
     """
+
     widget = CommaSeparatedUserInput
 
     def __init__(self, *args, **kwargs):
-        recipient_filter = kwargs.pop('recipient_filter', None)
+        recipient_filter = kwargs.pop("recipient_filter", None)
         self._recipient_filter = recipient_filter
         super(CommaSeparatedUserField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
         super(CommaSeparatedUserField, self).clean(value)
 
-        names = set(value.split(','))
+        names = set(value.split(","))
         names_set = set([name.strip() for name in names])
         users = list(User.objects.filter(username__in=names_set))
 
@@ -55,8 +56,11 @@ class CommaSeparatedUserField(forms.Field):
                     invalid_users.append(r.username)
 
         if unknown_names or invalid_users:
-            humanized_usernames = ', '.join(sorted(list(unknown_names) + invalid_users))
+            humanized_usernames = ", ".join(sorted(list(unknown_names) + invalid_users))
 
-            raise forms.ValidationError(_('The following usernames are incorrect: %(users)s.') % {'users': humanized_usernames})
+            raise forms.ValidationError(
+                _("The following usernames are incorrect: %(users)s.")
+                % {"users": humanized_usernames}
+            )
 
         return users

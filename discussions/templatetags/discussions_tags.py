@@ -16,14 +16,14 @@ class Folders(template.Node):
         try:
             user = self.user.resolve(context)
         except template.VariableDoesNotExist:
-            return ''
+            return ""
 
         folders = Folder.objects.filter(user=user)
 
         if self.var_name:
             context[self.var_name] = folders
 
-        return ''
+        return ""
 
 
 class MessageCount(template.Node):
@@ -39,7 +39,7 @@ class MessageCount(template.Node):
         try:
             user = self.user.resolve(context)
         except template.VariableDoesNotExist:
-            return ''
+            return ""
 
         if not self.to_user:
             message_count = Recipient.objects.count_unread_messages_for(user)
@@ -48,14 +48,15 @@ class MessageCount(template.Node):
             try:
                 to_user = self.to_user.resolve(context)
             except template.VariableDoesNotExist:
-                return ''
+                return ""
 
-            message_count = Recipient.objects.count_unread_messages_between(user,
-                                                                            to_user)
+            message_count = Recipient.objects.count_unread_messages_between(
+                user, to_user
+            )
 
         context[self.var_name] = message_count
 
-        return ''
+        return ""
 
 
 @register.tag
@@ -75,8 +76,10 @@ def get_folders_for(parser, token):
     try:
         tag_name, arg = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError("%s tag requires arguments" % token.contents.split()[0])
-    m = re.search(r'(.*?) as (\w+)', arg)
+        raise template.TemplateSyntaxError(
+            "%s tag requires arguments" % token.contents.split()[0]
+        )
+    m = re.search(r"(.*?) as (\w+)", arg)
 
     if not m:
         raise template.TemplateSyntaxError("%s tag had invalid arguments" % tag_name)
@@ -101,8 +104,10 @@ def get_unread_message_count_for(parser, token):
     try:
         tag_name, arg = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError("%s tag requires arguments" % token.contents.split()[0])
-    m = re.search(r'(.*?) as (\w+)', arg)
+        raise template.TemplateSyntaxError(
+            "%s tag requires arguments" % token.contents.split()[0]
+        )
+    m = re.search(r"(.*?) as (\w+)", arg)
     if not m:
         raise template.TemplateSyntaxError("%s tag had invalid arguments" % tag_name)
     user, var_name = m.groups()
@@ -126,8 +131,10 @@ def get_unread_message_count_between(parser, token):
     try:
         tag_name, arg = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError("%s tag requires arguments" % token.contents.split()[0])
-    m = re.search(r'(.*?) and (.*?) as (\w+)', arg)
+        raise template.TemplateSyntaxError(
+            "%s tag requires arguments" % token.contents.split()[0]
+        )
+    m = re.search(r"(.*?) and (.*?) as (\w+)", arg)
     if not m:
         raise template.TemplateSyntaxError("%s tag had invalid arguments" % tag_name)
     from_user, to_user, var_name = m.groups()

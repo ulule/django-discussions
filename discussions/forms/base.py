@@ -6,13 +6,19 @@ from ..models import Discussion, Folder
 
 
 class ComposeForm(forms.Form):
-    to = CommaSeparatedUserField(label=_('To'))
-    subject = forms.CharField(label=_('Subject'),
-                              widget=forms.TextInput({'placeholder': _('Write your title')}),
-                              required=True)
-    body = forms.CharField(label=_('Message'),
-                           widget=forms.Textarea({'class': 'message', 'placeholder': _('Write your message')}),
-                           required=True)
+    to = CommaSeparatedUserField(label=_("To"))
+    subject = forms.CharField(
+        label=_("Subject"),
+        widget=forms.TextInput({"placeholder": _("Write your title")}),
+        required=True,
+    )
+    body = forms.CharField(
+        label=_("Message"),
+        widget=forms.Textarea(
+            {"class": "message", "placeholder": _("Write your message")}
+        ),
+        required=True,
+    )
 
     def save(self, sender):
         """
@@ -24,39 +30,44 @@ class ComposeForm(forms.Form):
         :return: The saved :class:`Discussion`.
 
         """
-        to_user_list = self.cleaned_data['to']
-        subject = self.cleaned_data['subject']
-        body = self.cleaned_data['body']
+        to_user_list = self.cleaned_data["to"]
+        subject = self.cleaned_data["subject"]
+        body = self.cleaned_data["body"]
 
-        self.discussion = Discussion.objects.send_message(sender,
-                                                          to_user_list,
-                                                          subject,
-                                                          body)
+        self.discussion = Discussion.objects.send_message(
+            sender, to_user_list, subject, body
+        )
 
         return self.discussion
 
 
 class ReplyForm(forms.Form):
-    body = forms.CharField(label=_('Message'),
-                           widget=forms.Textarea({'class': 'message', 'placeholder': _('Write your message')}),
-                           required=True)
+    body = forms.CharField(
+        label=_("Message"),
+        widget=forms.Textarea(
+            {"class": "message", "placeholder": _("Write your message")}
+        ),
+        required=True,
+    )
 
     def __init__(self, *args, **kwargs):
-        self.discussion = kwargs.pop('discussion')
+        self.discussion = kwargs.pop("discussion")
 
         super(ReplyForm, self).__init__(*args, **kwargs)
 
     def save(self, sender):
-        return self.discussion.add_message(self.cleaned_data['body'], sender)
+        return self.discussion.add_message(self.cleaned_data["body"], sender)
 
 
 class FolderForm(forms.ModelForm):
-    name = forms.CharField(label=_('Name'),
-                           widget=forms.TextInput({'placeholder': _('Write the folder\'s name')}),
-                           required=True)
+    name = forms.CharField(
+        label=_("Name"),
+        widget=forms.TextInput({"placeholder": _("Write the folder's name")}),
+        required=True,
+    )
 
     class Meta:
-        exclude = ('user', 'discussions', 'created_at')
+        exclude = ("user", "discussions", "created_at")
         model = Folder
 
     def save(self, user):

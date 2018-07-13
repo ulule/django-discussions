@@ -6,11 +6,15 @@ from .utils import get_profile_model, queryset_to_dict
 
 
 def lookup_discussions(recipients):
-    recipients_by_ids = queryset_to_dict(recipients, key='discussion_id', singular=False)
+    recipients_by_ids = queryset_to_dict(
+        recipients, key="discussion_id", singular=False
+    )
 
-    discussions = (Discussion.objects.filter(pk__in=recipients_by_ids.keys())
-                   .select_related('sender')
-                   .prefetch_related('recipients'))
+    discussions = (
+        Discussion.objects.filter(pk__in=recipients_by_ids.keys())
+        .select_related("sender")
+        .prefetch_related("recipients")
+    )
 
     for discussion in discussions:
         if discussion.pk in recipients_by_ids:
@@ -36,7 +40,9 @@ def lookup_profiles(recipients):
     Profile = get_profile_model()
 
     if Profile:
-        profiles = queryset_to_dict(Profile.objects.filter(user__in=user_ids), key='user_id')
+        profiles = queryset_to_dict(
+            Profile.objects.filter(user__in=user_ids), key="user_id"
+        )
 
         for user_id, profile in profiles.iteritems():
             if user_id in user_ids:
