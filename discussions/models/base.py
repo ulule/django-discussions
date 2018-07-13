@@ -29,9 +29,11 @@ class Recipient(models.Model):
                      (2, 'deleted', _('deleted')))
 
     user = models.ForeignKey(AUTH_USER_MODEL,
+                             on_delete=models.CASCADE,
                              verbose_name=_('recipient'))
 
     discussion = models.ForeignKey(get_model_string('Discussion'),
+                                   on_delete=models.CASCADE,
                                    verbose_name=_('discussion'))
 
     folder = models.ForeignKey(get_model_string('Folder'),
@@ -102,6 +104,7 @@ class Recipient(models.Model):
 class Discussion(models.Model):
     """ Private message model, from user to user(s) """
     sender = models.ForeignKey(AUTH_USER_MODEL,
+                               on_delete=models.PROTECT,
                                related_name='discussions_sent',
                                verbose_name=_('sender'))
 
@@ -242,10 +245,12 @@ class Discussion(models.Model):
 class Message(models.Model):
     """ Private message model, from user to user(s) """
     sender = models.ForeignKey(AUTH_USER_MODEL,
+                               on_delete=models.CASCADE,
                                related_name='sent_messages',
                                verbose_name=_('sender'))
 
     discussion = models.ForeignKey(get_model_string('Discussion'),
+                                   on_delete=models.PROTECT,
                                    related_name='messages',
                                    verbose_name=_('discussion'))
 
@@ -282,7 +287,9 @@ class Folder(models.Model):
     created_at = models.DateTimeField(_('created at'),
                                       auto_now_add=True)
 
-    user = models.ForeignKey(AUTH_USER_MODEL, related_name='discussion_folders')
+    user = models.ForeignKey(AUTH_USER_MODEL,
+                             on_delete=models.CASCADE,
+                             related_name='discussion_folders')
 
     class Meta:
         ordering = ['-created_at']
